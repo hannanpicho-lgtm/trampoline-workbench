@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Users, DollarSign, TrendingUp, CheckCircle } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function AdminStats() {
   const [stats, setStats] = useState({
@@ -17,9 +17,9 @@ export default function AdminStats() {
   const loadStats = async () => {
     try {
       const [users, tasks, withdrawals] = await Promise.all([
-        base44.entities.AppUser.list(),
-        base44.entities.UserTask.filter({ status: "pending" }),
-        base44.entities.Transaction.filter({ type: "withdrawal", status: "pending" })
+        backendClient.entities.AppUser.list(),
+        backendClient.entities.UserTask.filter({ status: "pending" }),
+        backendClient.entities.Transaction.filter({ type: "withdrawal", status: "pending" })
       ]);
 
       const totalBalance = users.reduce((sum, user) => sum + (user.balance || 0), 0);

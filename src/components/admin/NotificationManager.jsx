@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell, Send, Users, Crown, Filter, Eye, Trash2, Plus, RefreshCw } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function NotificationManager() {
@@ -34,9 +34,9 @@ export default function NotificationManager() {
     setLoading(true);
     try {
       const [notificationsData, usersData, segmentsData] = await Promise.all([
-        base44.entities.Notification.list('-created_date', 200),
-        base44.entities.AppUser.list('-created_date', 500),
-        base44.entities.UserSegment.filter({ isActive: true })
+        backendClient.entities.Notification.list('-created_date', 200),
+        backendClient.entities.AppUser.list('-created_date', 500),
+        backendClient.entities.UserSegment.filter({ isActive: true })
       ]);
       setNotifications(notificationsData);
       setUsers(usersData);
@@ -112,7 +112,7 @@ export default function NotificationManager() {
     setSending(true);
     try {
       const notificationPromises = targetUsers.map(user =>
-        base44.entities.Notification.create({
+        backendClient.entities.Notification.create({
           userId: user.id,
           type: formData.type,
           title: formData.title,
@@ -150,7 +150,7 @@ export default function NotificationManager() {
 
     try {
       for (const notification of oldNotifications) {
-        await base44.entities.Notification.delete(notification.id);
+        await backendClient.entities.Notification.delete(notification.id);
       }
       toast.success(`Deleted ${oldNotifications.length} notifications`);
       loadData();

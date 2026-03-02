@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { DollarSign, Search, CheckCircle, AlertCircle, Clock, TrendingUp, Eye } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function CommissionPayoutManager() {
@@ -37,7 +38,7 @@ export default function CommissionPayoutManager() {
   const loadPayouts = async () => {
     setLoading(true);
     try {
-      const data = await base44.entities.CommissionPayout.list("-requestedAt", 200);
+      const data = await backendClient.entities.CommissionPayout.list("-requestedAt", 200);
       setPayouts(data);
     } catch (error) {
       toast.error("Failed to load payouts");

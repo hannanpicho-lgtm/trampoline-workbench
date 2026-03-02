@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, CheckCircle, XCircle, Clock, TrendingUp, AlertTriangle, RefreshCw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
@@ -25,7 +26,7 @@ export default function AutomatedPayoutMonitor() {
     setLoading(true);
     try {
       // Load auto-withdrawal settings
-      const settings = await base44.entities.AutoWithdrawalSettings.filter({});
+      const settings = await backendClient.entities.AutoWithdrawalSettings.filter({});
       setAutoSettings(settings);
 
       // Calculate stats
@@ -35,7 +36,7 @@ export default function AutomatedPayoutMonitor() {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      const transactions = await base44.entities.Transaction.filter(
+      const transactions = await backendClient.entities.Transaction.filter(
         { type: 'withdrawal' },
         '-created_date',
         100
@@ -56,7 +57,7 @@ export default function AutomatedPayoutMonitor() {
         .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
       // Calculate pending (users who meet threshold)
-      const users = await base44.entities.AppUser.filter({});
+      const users = await backendClient.entities.AppUser.filter({});
       const pendingCount = settings.filter(s => {
         if (!s.isEnabled) return false;
         const user = users.find(u => u.id === s.userId);

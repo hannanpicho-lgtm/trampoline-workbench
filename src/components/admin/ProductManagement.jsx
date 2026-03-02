@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { Plus, Edit2, Trash2, Package, Upload, Crown } from "lucide-react";
 
@@ -27,7 +28,7 @@ export default function ProductManagement() {
   const loadProducts = async () => {
     setLoading(true);
     try {
-      const data = await base44.entities.Product.list();
+      const data = await backendClient.entities.Product.list();
       setProducts(data);
     } catch (error) {
       toast.error("Failed to load products");
@@ -57,10 +58,10 @@ export default function ProductManagement() {
       };
 
       if (editingProduct) {
-        await base44.entities.Product.update(editingProduct.id, productData);
+        await backendClient.entities.Product.update(editingProduct.id, productData);
         toast.success("Product updated successfully");
       } else {
-        await base44.entities.Product.create(productData);
+        await backendClient.entities.Product.create(productData);
         toast.success("Product created successfully");
       }
 
@@ -103,7 +104,7 @@ export default function ProductManagement() {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      await base44.entities.Product.delete(productId);
+      await backendClient.entities.Product.delete(productId);
       toast.success("Product deleted successfully");
       loadProducts();
     } catch (error) {
@@ -113,7 +114,7 @@ export default function ProductManagement() {
 
   const handleToggleActive = async (product) => {
     try {
-      await base44.entities.Product.update(product.id, {
+      await backendClient.entities.Product.update(product.id, {
         isActive: !product.isActive
       });
       toast.success(`Product ${!product.isActive ? "activated" : "deactivated"}`);
@@ -155,11 +156,11 @@ export default function ProductManagement() {
               if (!confirm("Delete ALL products without images? This cannot be undone!")) return;
               const loadingToast = toast.loading("Deleting products without images...");
               try {
-                const allProducts = await base44.entities.Product.list("-created_date", 10000);
+                const allProducts = await backendClient.entities.Product.list("-created_date", 10000);
                 const productsToDelete = allProducts.filter(p => !p.imageUrl || p.imageUrl.trim() === '');
                 
                 for (const product of productsToDelete) {
-                  await base44.entities.Product.delete(product.id);
+                  await backendClient.entities.Product.delete(product.id);
                 }
                 
                 toast.success(`Deleted ${productsToDelete.length} products without images`, { id: loadingToast });
@@ -275,7 +276,7 @@ export default function ProductManagement() {
                     onClick={async () => {
                       if (!confirm(`Convert "${product.name}" to Premium? Commission will be 10x higher.`)) return;
                       try {
-                        await base44.entities.Product.update(product.id, {
+                        await backendClient.entities.Product.update(product.id, {
                           isPremium: true,
                           commission: product.commission * 10
                         });
