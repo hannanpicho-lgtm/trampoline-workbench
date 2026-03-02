@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Package, DollarSign, TrendingUp, Award } from "lucide-react";
 
@@ -17,8 +17,8 @@ export default function ProductPerformance() {
     setLoading(true);
     try {
       const [products, tasks] = await Promise.all([
-        base44.entities.Product.list(),
-        base44.entities.UserTask.list()
+        backendClient.entities.Product.list(),
+        backendClient.entities.UserTask.list()
       ]);
 
       // Product performance stats

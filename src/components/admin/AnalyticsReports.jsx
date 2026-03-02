@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Users, DollarSign, CheckCircle, TrendingUp, Calendar, Award } from "lucide-react";
 
@@ -28,9 +28,9 @@ export default function AnalyticsReports() {
     setLoading(true);
     try {
       const [users, tasks, appUsers] = await Promise.all([
-        base44.entities.User.list(),
-        base44.entities.UserTask.list(),
-        base44.entities.AppUser.list()
+        backendClient.entities.User.list(),
+        backendClient.entities.UserTask.list(),
+        backendClient.entities.AppUser.list()
       ]);
 
       // Calculate stats

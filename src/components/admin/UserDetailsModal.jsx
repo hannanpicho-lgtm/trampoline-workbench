@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, User, Award, DollarSign, Activity, Clock, MapPin, Shield, Edit2, Flame, Target, Unlock, Crown, Bell } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import AssignPremiumProduct from "./AssignPremiumProduct";
 
@@ -26,18 +27,18 @@ export default function UserDetailsModal({ userId, onClose, onUpdate }) {
     setLoading(true);
     try {
       const [appUserData, tasksData, transactionsData, loginData, notificationsData] = await Promise.all([
-        base44.entities.AppUser.filter({ id: userId }),
-        base44.entities.UserTask.filter({ userId }),
-        base44.entities.Transaction.filter({ userId }),
-        base44.entities.LoginHistory.filter({ userId }),
-        base44.entities.Notification.filter({ userId }, '-created_date', 20)
+        backendClient.entities.AppUser.filter({ id: userId }),
+        backendClient.entities.UserTask.filter({ userId }),
+        backendClient.entities.Transaction.filter({ userId }),
+        backendClient.entities.LoginHistory.filter({ userId }),
+        backendClient.entities.Notification.filter({ userId }, '-created_date', 20)
       ]);
 
       if (appUserData.length > 0) {
         setAppUser(appUserData[0]);
         
         // Get system user
-        const users = await base44.entities.User.list();
+        const users = await backendClient.entities.User.list();
         const sysUser = users.find(u => u.email === appUserData[0].created_by);
         setSystemUser(sysUser);
       }
@@ -63,7 +64,7 @@ export default function UserDetailsModal({ userId, onClose, onUpdate }) {
     if (!confirm(`Are you sure you want to ${action} this user account?`)) return;
 
     try {
-      await base44.entities.User.update(systemUser.id, { status: newStatus });
+      await backendClient.entities.User.update(systemUser.id, { status: newStatus });
       toast.success(`User account ${action}d successfully`);
       setSystemUser({ ...systemUser, status: newStatus });
       onUpdate?.();
@@ -76,7 +77,7 @@ export default function UserDetailsModal({ userId, onClose, onUpdate }) {
     if (!confirm("Unfreeze this account? Balance will be neutralized to $0 and user can continue tasks.")) return;
 
     try {
-      await base44.entities.AppUser.update(appUser.id, {
+      await backendClient.entities.AppUser.update(appUser.id, {
         isFrozen: false,
         frozenBalance: 0,
         balance: 0
@@ -119,7 +120,7 @@ export default function UserDetailsModal({ userId, onClose, onUpdate }) {
         updateData.tasksInCurrentSet = parseInt(editValue) || 0;
       }
 
-      await base44.entities.AppUser.update(appUser.id, updateData);
+      await backendClient.entities.AppUser.update(appUser.id, updateData);
       toast.success("Updated successfully");
       setShowEditModal(false);
       setEditField(null);

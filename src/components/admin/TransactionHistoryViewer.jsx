@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, ArrowDown, ArrowUp, Search, Filter, Download, Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function TransactionHistoryViewer() {
@@ -20,8 +20,8 @@ export default function TransactionHistoryViewer() {
     setLoading(true);
     try {
       const [transData, usersData] = await Promise.all([
-        base44.entities.Transaction.list('-created_date', 500),
-        base44.entities.AppUser.list()
+        backendClient.entities.Transaction.list('-created_date', 500),
+        backendClient.entities.AppUser.list()
       ]);
       setTransactions(transData);
       setUsers(usersData);

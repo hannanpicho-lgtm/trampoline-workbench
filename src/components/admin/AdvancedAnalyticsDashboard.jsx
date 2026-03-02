@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { TrendingUp, TrendingDown, Users, DollarSign, Target, Zap, AlertTriangle, Calendar, Award, RefreshCw, Settings, CheckCircle, Clock } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from "recharts";
@@ -20,9 +20,9 @@ export default function AdvancedAnalyticsDashboard() {
     setLoading(true);
     try {
       const [users, tasks, configs] = await Promise.all([
-        base44.entities.AppUser.list("-created_date", 500),
-        base44.entities.UserTask.list("-created_date", 1000),
-        base44.entities.TaskAssignmentConfig.list()
+        backendClient.entities.AppUser.list("-created_date", 500),
+        backendClient.entities.UserTask.list("-created_date", 1000),
+        backendClient.entities.TaskAssignmentConfig.list()
       ]);
 
       calculateRetention(users, tasks);
