@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { Loader2, TestTube, User } from "lucide-react";
 
@@ -21,11 +21,11 @@ export default function QuickTestSetup() {
       const config = VIP_CONFIGS[vipLevel];
       
       // Check if AppUser exists
-      const existingAppUsers = await base44.entities.AppUser.filter({ created_by: config.email });
+      const existingAppUsers = await backendClient.entities.AppUser.filter({ created_by: config.email });
       
       if (existingAppUsers.length > 0) {
         // Reset existing user
-        await base44.entities.AppUser.update(existingAppUsers[0].id, {
+        await backendClient.entities.AppUser.update(existingAppUsers[0].id, {
           balance: config.balance,
           frozenBalance: 0,
           isFrozen: false,
@@ -38,9 +38,9 @@ export default function QuickTestSetup() {
         });
 
         // Delete existing tasks
-        const tasks = await base44.entities.UserTask.filter({ userId: existingAppUsers[0].id });
+        const tasks = await backendClient.entities.UserTask.filter({ userId: existingAppUsers[0].id });
         for (const task of tasks) {
-          await base44.entities.UserTask.delete(task.id);
+          await backendClient.entities.UserTask.delete(task.id);
         }
 
         toast.success(`${config.label} test user reset!`, {
@@ -48,7 +48,7 @@ export default function QuickTestSetup() {
         });
       } else {
         // Create new AppUser
-        await base44.entities.AppUser.create({
+        await backendClient.entities.AppUser.create({
           phone: `+123456789${Object.keys(VIP_CONFIGS).indexOf(vipLevel)}`,
           invitationCode: `TEST${config.label}`,
           balance: config.balance,

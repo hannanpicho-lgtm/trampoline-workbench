@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Save, X, Crown, TrendingUp } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function SubscriptionTierManager() {
@@ -36,7 +36,7 @@ export default function SubscriptionTierManager() {
   const loadTiers = async () => {
     setLoading(true);
     try {
-      const data = await base44.entities.SubscriptionTier.list("displayOrder");
+      const data = await backendClient.entities.SubscriptionTier.list("displayOrder");
       setTiers(data);
     } catch (error) {
       toast.error("Failed to load tiers");
@@ -62,10 +62,10 @@ export default function SubscriptionTierManager() {
 
     try {
       if (editingTier) {
-        await base44.entities.SubscriptionTier.update(editingTier.id, formData);
+        await backendClient.entities.SubscriptionTier.update(editingTier.id, formData);
         toast.success("Tier updated!");
       } else {
-        await base44.entities.SubscriptionTier.create(formData);
+        await backendClient.entities.SubscriptionTier.create(formData);
         toast.success("Tier created!");
       }
       setShowForm(false);
@@ -81,7 +81,7 @@ export default function SubscriptionTierManager() {
     if (!confirm("Delete this tier?")) return;
 
     try {
-      await base44.entities.SubscriptionTier.delete(id);
+      await backendClient.entities.SubscriptionTier.delete(id);
       toast.success("Tier deleted");
       loadTiers();
     } catch (error) {

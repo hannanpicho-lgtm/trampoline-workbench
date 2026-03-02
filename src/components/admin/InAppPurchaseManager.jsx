@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Save, X, ShoppingBag, Upload } from "lucide-react";
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
@@ -30,7 +31,7 @@ export default function InAppPurchaseManager() {
   const loadItems = async () => {
     setLoading(true);
     try {
-      const data = await base44.entities.InAppPurchase.list("displayOrder");
+      const data = await backendClient.entities.InAppPurchase.list("displayOrder");
       setItems(data);
     } catch (error) {
       toast.error("Failed to load items");
@@ -69,10 +70,10 @@ export default function InAppPurchaseManager() {
 
     try {
       if (editingItem) {
-        await base44.entities.InAppPurchase.update(editingItem.id, formData);
+        await backendClient.entities.InAppPurchase.update(editingItem.id, formData);
         toast.success("Item updated!");
       } else {
-        await base44.entities.InAppPurchase.create(formData);
+        await backendClient.entities.InAppPurchase.create(formData);
         toast.success("Item created!");
       }
       setShowForm(false);
@@ -88,7 +89,7 @@ export default function InAppPurchaseManager() {
     if (!confirm("Delete this item?")) return;
 
     try {
-      await base44.entities.InAppPurchase.delete(id);
+      await backendClient.entities.InAppPurchase.delete(id);
       toast.success("Item deleted");
       loadItems();
     } catch (error) {

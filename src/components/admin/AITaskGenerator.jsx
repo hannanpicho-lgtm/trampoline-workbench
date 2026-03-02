@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { Sparkles, Loader2, Zap } from "lucide-react";
@@ -22,7 +23,7 @@ export default function AITaskGenerator() {
 
   const loadUsers = async () => {
     try {
-      const appUsers = await base44.entities.AppUser.list("-created_date", 100);
+      const appUsers = await backendClient.entities.AppUser.list("-created_date", 100);
       setUsers(appUsers);
     } catch (error) {
       console.error("Failed to load users:", error);
@@ -74,7 +75,7 @@ export default function AITaskGenerator() {
 
     try {
       for (const task of selectedTasks) {
-        await base44.entities.Product.create({
+        await backendClient.entities.Product.create({
           ...task,
           isActive: true
         });

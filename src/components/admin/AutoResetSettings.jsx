@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Power, RefreshCw, AlertCircle } from "lucide-react";
@@ -29,7 +30,7 @@ export default function AutoResetSettings() {
   const loadRules = async () => {
     setLoading(true);
     try {
-      const rulesData = await base44.entities.AutoResetRule.list("-created_date");
+      const rulesData = await backendClient.entities.AutoResetRule.list("-created_date");
       setRules(rulesData);
     } catch (error) {
       toast.error("Failed to load auto-reset rules");
@@ -42,10 +43,10 @@ export default function AutoResetSettings() {
     e.preventDefault();
     try {
       if (editingRule) {
-        await base44.entities.AutoResetRule.update(editingRule.id, formData);
+        await backendClient.entities.AutoResetRule.update(editingRule.id, formData);
         toast.success("Rule updated successfully");
       } else {
-        await base44.entities.AutoResetRule.create(formData);
+        await backendClient.entities.AutoResetRule.create(formData);
         toast.success("Rule created successfully");
       }
       resetForm();
@@ -77,7 +78,7 @@ export default function AutoResetSettings() {
     if (!confirm("Are you sure you want to delete this rule?")) return;
     
     try {
-      await base44.entities.AutoResetRule.delete(ruleId);
+      await backendClient.entities.AutoResetRule.delete(ruleId);
       toast.success("Rule deleted successfully");
       loadRules();
     } catch (error) {
@@ -87,7 +88,7 @@ export default function AutoResetSettings() {
 
   const handleToggleActive = async (rule) => {
     try {
-      await base44.entities.AutoResetRule.update(rule.id, {
+      await backendClient.entities.AutoResetRule.update(rule.id, {
         isActive: !rule.isActive
       });
       toast.success(`Rule ${!rule.isActive ? "activated" : "deactivated"}`);
