@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MessageCircle, Send, User, Search, Filter, X } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function CustomerServiceManager() {
@@ -17,7 +17,7 @@ export default function CustomerServiceManager() {
     loadData();
     
     // Subscribe to real-time updates
-    const unsubscribe = base44.entities.CustomerServiceChat.subscribe(() => {
+    const unsubscribe = backendClient.entities.CustomerServiceChat.subscribe(() => {
       loadData();
     });
     
@@ -28,8 +28,8 @@ export default function CustomerServiceManager() {
     setLoading(true);
     try {
       const [messagesData, usersData] = await Promise.all([
-        base44.entities.CustomerServiceChat.list('-created_date', 500),
-        base44.entities.AppUser.list('-created_date', 500)
+        backendClient.entities.CustomerServiceChat.list('-created_date', 500),
+        backendClient.entities.AppUser.list('-created_date', 500)
       ]);
       setMessages(messagesData);
       setUsers(usersData);
@@ -45,7 +45,7 @@ export default function CustomerServiceManager() {
 
     setSending(true);
     try {
-      await base44.entities.CustomerServiceChat.create({
+      await backendClient.entities.CustomerServiceChat.create({
         userId: selectedUserId,
         message: replyText,
         isFromUser: false,
@@ -56,17 +56,17 @@ export default function CustomerServiceManager() {
       // Update status of user's messages to replied
       const userMessages = messages.filter(m => m.userId === selectedUserId && m.isFromUser && m.status === 'pending');
       for (const msg of userMessages) {
-        await base44.entities.CustomerServiceChat.update(msg.id, { status: 'replied' });
+        await backendClient.entities.CustomerServiceChat.update(msg.id, { status: 'replied' });
       }
 
       // Notify user
       try {
         const selectedUser = users.find(u => u.id === selectedUserId);
         if (selectedUser) {
-          const appUser = await base44.entities.AppUser.get(selectedUserId);
-          const userAccount = await base44.entities.User.filter({ email: appUser.created_by });
+          const appUser = await backendClient.entities.AppUser.get(selectedUserId);
+          const userAccount = await backendClient.entities.User.filter({ email: appUser.created_by });
           if (userAccount.length > 0) {
-            await base44.entities.Notification.create({
+            await backendClient.entities.Notification.create({
               userId: userAccount[0].id,
               type: 'customer_message',
               title: '💬 Support Team Replied',
@@ -94,7 +94,7 @@ export default function CustomerServiceManager() {
     try {
       const userMessages = messages.filter(m => m.userId === userId);
       for (const msg of userMessages) {
-        await base44.entities.CustomerServiceChat.update(msg.id, { status: 'resolved' });
+        await backendClient.entities.CustomerServiceChat.update(msg.id, { status: 'resolved' });
       }
       toast.success('Conversation marked as resolved');
       loadData();
@@ -105,7 +105,7 @@ export default function CustomerServiceManager() {
 
   const handleMarkRead = async (messageId) => {
     try {
-      await base44.entities.CustomerServiceChat.update(messageId, { isRead: true });
+      await backendClient.entities.CustomerServiceChat.update(messageId, { isRead: true });
       loadData();
     } catch (error) {
       toast.error('Failed to mark as read');

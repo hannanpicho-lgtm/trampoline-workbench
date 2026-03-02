@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function EditUserModal({ show, user, onClose, onSuccess }) {
@@ -38,7 +38,7 @@ export default function EditUserModal({ show, user, onClose, onSuccess }) {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await base44.entities.AppUser.update(user.id, formData);
+      await backendClient.entities.AppUser.update(user.id, formData);
       toast.success("User updated successfully!");
       onSuccess();
     } catch (error) {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { Loader2, Package, Zap, Sparkles, Eye } from "lucide-react";
@@ -81,7 +82,7 @@ export default function BulkProductGenerator() {
           batchProducts.push(generateRandomProduct(productIndex, vipLevel));
         }
 
-        await base44.entities.Product.bulkCreate(batchProducts);
+        await backendClient.entities.Product.bulkCreate(batchProducts);
         created += productsInBatch;
         
         toast.success(`Created ${created} / ${count} products...`, { duration: 1000 });
@@ -159,7 +160,7 @@ Return ONLY valid JSON array format, no markdown or explanation.`;
 
       for (let i = 0; i < generatedProducts.length; i += batchSize) {
         const batch = generatedProducts.slice(i, i + batchSize);
-        await base44.entities.Product.bulkCreate(batch);
+        await backendClient.entities.Product.bulkCreate(batch);
         created += batch.length;
         toast.success(`Created ${created} / ${generatedProducts.length}...`, { duration: 1000 });
       }
@@ -179,12 +180,12 @@ Return ONLY valid JSON array format, no markdown or explanation.`;
 
     setLoading(true);
     try {
-      const products = await base44.entities.Product.list("-created_date", 10000);
+      const products = await backendClient.entities.Product.list("-created_date", 10000);
       
       const batchSize = 50;
       for (let i = 0; i < products.length; i += batchSize) {
         const batch = products.slice(i, i + batchSize);
-        await Promise.all(batch.map(p => base44.entities.Product.delete(p.id)));
+        await Promise.all(batch.map(p => backendClient.entities.Product.delete(p.id)));
         toast.success(`Deleted ${Math.min(i + batchSize, products.length)} / ${products.length}...`, { duration: 500 });
       }
 

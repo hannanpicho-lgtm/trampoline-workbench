@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Play, CheckCircle, XCircle, AlertCircle } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 function assert(condition, message) {
@@ -85,7 +85,7 @@ export default function VIP1TestRunner() {
     setTesting(true);
     try {
       // Get Bronze users
-      const users = await base44.entities.AppUser.filter({ vipLevel: "Bronze" });
+      const users = await backendClient.entities.AppUser.filter({ vipLevel: "Bronze" });
       
       if (users.length === 0) {
         toast.error("No Bronze (VIP1) users found");
@@ -97,11 +97,11 @@ export default function VIP1TestRunner() {
 
       for (const user of users) {
         // Get user's tasks
-        const tasks = await base44.entities.UserTask.filter({ userId: user.id });
+        const tasks = await backendClient.entities.UserTask.filter({ userId: user.id });
         const productIds = tasks.map(t => t.productId);
         
         // Get products
-        const products = await base44.entities.Product.filter({});
+        const products = await backendClient.entities.Product.filter({});
         const userProducts = products.filter(p => productIds.includes(p.id));
 
         if (userProducts.length === 0) continue;

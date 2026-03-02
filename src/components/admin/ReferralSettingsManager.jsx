@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Settings, Save, RefreshCw, BarChart3, Users } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function ReferralSettingsManager() {
@@ -33,8 +33,8 @@ export default function ReferralSettingsManager() {
     setStatsLoading(true);
     try {
       const [earnings, users] = await Promise.all([
-        base44.entities.ReferralEarning.list('-created_date', 1000),
-        base44.entities.AppUser.list()
+        backendClient.entities.ReferralEarning.list('-created_date', 1000),
+        backendClient.entities.AppUser.list()
       ]);
 
       const totalReferrals = users.filter(u => u.referredBy).length;
@@ -70,7 +70,7 @@ export default function ReferralSettingsManager() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      await base44.entities.AppSettings.update('referral_settings', {
+      await backendClient.entities.AppSettings.update('referral_settings', {
         value: settings
       });
       toast.success('Referral settings updated');

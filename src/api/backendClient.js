@@ -225,6 +225,22 @@ const createEntityApi = (entityName) => ({
 		return base44.entities[entityName].filter(criteria, sort, limit);
 	},
 
+	async get(id) {
+		if (resolvedProvider === 'rest') {
+			return restRequest(`/api/entities/${entityName}/${id}`);
+		}
+
+		return base44.entities[entityName].get(id);
+	},
+
+	subscribe(callback) {
+		if (resolvedProvider === 'rest') {
+			return () => {};
+		}
+
+		return base44.entities[entityName].subscribe(callback);
+	},
+
 	async create(payload) {
 		if (resolvedProvider === 'rest') {
 			return restRequest(`/api/entities/${entityName}`, {
