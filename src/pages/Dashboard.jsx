@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MessageCircle, Home, Award, ClipboardList, User, Bell, Clock, Globe, Moon, Sun, Check, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 // Import page components
 import LoginPage from "../components/auth/LoginPage";
@@ -114,7 +115,7 @@ export default function Dashboard() {
 
   const checkAuth = async () => {
     try {
-      const user = await base44.auth.me();
+      const user = await backendClient.auth.me();
       if (user) {
         // Check if this is a new login by checking localStorage flag
         const lastTrackedLogin = localStorage.getItem('lastTrackedLogin');
@@ -172,7 +173,7 @@ export default function Dashboard() {
 
   // Handle session logout
   const handleSessionLogout = useCallback(() => {
-    base44.auth.logout(window.location.pathname);
+    backendClient.auth.logout(window.location.pathname);
     setIsLoggedIn(false);
     setShowSessionWarning(false);
     setCurrentUser(null);
@@ -236,7 +237,7 @@ export default function Dashboard() {
   const handleLogin = async (username, password, rememberMe) => {
     try {
       // Use Base44's direct email/password authentication
-      const { data, error } = await base44.auth.signInWithPassword({
+      const { data, error } = await backendClient.auth.signInWithPassword({
         email: username,
         password: password
       });

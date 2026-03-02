@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Copy, CheckCircle, XCircle, Clock, Trash2, RefreshCw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 const generateCode = () => {
@@ -40,7 +41,7 @@ export default function InvitationCodeManager() {
     try {
       const [codesData, user] = await Promise.all([
         base44.entities.InvitationCode.list('-created_date', 200),
-        base44.auth.me()
+        backendClient.auth.me()
       ]);
       setCodes(codesData);
       setCurrentUser(user);

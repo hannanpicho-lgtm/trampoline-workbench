@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 import { createPageUrl } from '@/utils';
 import ProfilePictureSection from '../components/profile/ProfilePictureSection';
@@ -27,7 +28,7 @@ export default function UserProfile() {
   const loadUserData = async () => {
     setLoading(true);
     try {
-      const currentUser = await base44.auth.me();
+      const currentUser = await backendClient.auth.me();
       setUser(currentUser);
 
       const appUsers = await base44.entities.AppUser.filter({ created_by: currentUser.email });
@@ -51,7 +52,7 @@ export default function UserProfile() {
         });
       }
 
-      await base44.auth.updateMe({
+      await backendClient.auth.updateMe({
         full_name: data.fullName
       });
 

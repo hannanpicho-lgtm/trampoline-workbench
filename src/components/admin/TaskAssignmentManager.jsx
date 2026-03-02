@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, Plus, Trash2, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function TaskAssignmentManager() {
@@ -66,7 +67,7 @@ export default function TaskAssignmentManager() {
         productId: selectedProduct.id,
         taskTypeId: selectedTaskType.id,
         assignmentType: "manual",
-        assignedBy: (await base44.auth.me()).email,
+        assignedBy: (await backendClient.auth.me()).email,
         assignedAt: new Date().toISOString(),
         dueAt,
         status: "assigned",

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Trophy, Medal, Award, TrendingUp, Flame } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function LeaderboardPage() {
   const [activeTab, setActiveTab] = useState("points");
@@ -15,7 +16,7 @@ export default function LeaderboardPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const me = await base44.auth.me();
+      const me = await backendClient.auth.me();
       setCurrentUser(me);
 
       const appUsers = await base44.entities.AppUser.list();

@@ -139,9 +139,66 @@ const transactionsApi = {
 	}
 };
 
+const authApi = {
+	async me() {
+		if (resolvedProvider === 'rest') {
+			return restRequest('/api/auth/me');
+		}
+
+		return base44.auth.me();
+	},
+
+	async updateMe(payload) {
+		if (resolvedProvider === 'rest') {
+			return restRequest('/api/auth/me', {
+				method: 'PATCH',
+				body: payload
+			});
+		}
+
+		return base44.auth.updateMe(payload);
+	},
+
+	async signInWithPassword(payload) {
+		if (resolvedProvider === 'rest') {
+			return restRequest('/api/auth/sign-in', {
+				method: 'POST',
+				body: payload
+			});
+		}
+
+		return base44.auth.signInWithPassword(payload);
+	},
+
+	logout(redirectPath) {
+		if (resolvedProvider === 'rest') {
+			const target = redirectPath || '/';
+			if (typeof window !== 'undefined') {
+				window.location.href = target;
+			}
+			return;
+		}
+
+		return redirectPath ? base44.auth.logout(redirectPath) : base44.auth.logout();
+	},
+
+	redirectToLogin(returnPath) {
+		if (resolvedProvider === 'rest') {
+			const target = returnPath ? `/login?next=${encodeURIComponent(returnPath)}` : '/login';
+			if (typeof window !== 'undefined') {
+				window.location.href = target;
+			}
+			return;
+		}
+
+		return returnPath ? base44.auth.redirectToLogin(returnPath) : base44.auth.redirectToLogin();
+	}
+};
+
 export const backendProvider = resolvedProvider;
 
 export const backendClient = {
+	auth: authApi,
 	trainingAccounts: trainingAccountsApi,
 	trainingLogs: trainingLogsApi,
 	transactions: transactionsApi,

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Users, Plus, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function UserRoleAssignment({ userId, userEmail }) {
@@ -40,7 +41,7 @@ export default function UserRoleAssignment({ userId, userEmail }) {
       await base44.entities.UserRole.create({
         userId,
         roleId: selectedRoleId,
-        assignedBy: await base44.auth.me().then(u => u.email)
+        assignedBy: await backendClient.auth.me().then(u => u.email)
       });
 
       toast.success('Role assigned successfully');

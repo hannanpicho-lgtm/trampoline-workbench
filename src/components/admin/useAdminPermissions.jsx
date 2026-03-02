@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 
 export function useAdminPermissions() {
   const [permissions, setPermissions] = useState(new Set());
@@ -12,7 +13,7 @@ export function useAdminPermissions() {
 
   const loadPermissions = async () => {
     try {
-      const user = await base44.auth.me();
+      const user = await backendClient.auth.me();
       
       // Super admin has all permissions
       if (user.role === 'admin') {

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, Camera, Lock, User, Phone, Mail, Loader2, Check, Award, Trophy, Star, Target, Globe, Bell, DollarSign, History, ArrowDown, ArrowUp, Settings as SettingsIcon, ChevronRight, Palette, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { getVIPLevel } from "../shared/VIPLevelCard";
 import TaskAutomationSettings from "../automation/TaskAutomationSettings";
 import ProfileBannerEditor from "../profile/ProfileBannerEditor";
@@ -139,7 +140,7 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
     setIsSaving(true);
     try {
       // Update Base44 user
-      await base44.auth.updateMe({
+      await backendClient.auth.updateMe({
         full_name: formData.fullName,
       });
 
@@ -187,7 +188,7 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
     setIsSaving(true);
     try {
       // In production, you'd verify currentPassword and update via Base44 auth
-      await base44.auth.updateMe({
+      await backendClient.auth.updateMe({
         // password update would go here
       });
 

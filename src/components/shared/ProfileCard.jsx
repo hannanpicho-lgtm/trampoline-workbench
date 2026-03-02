@@ -1,6 +1,6 @@
 import { Eye, EyeOff, Copy, Diamond, Plus, ArrowDown, ArrowUp, ArrowLeftRight, LogOut } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import VIPBadge from "./VIPBadge";
 
 export default function ProfileCard({ 
@@ -22,7 +22,7 @@ export default function ProfileCard({
   };
 
   const handleLogout = () => {
-    base44.auth.logout();
+    backendClient.auth.logout();
     if (onNavigate) {
       onNavigate("login");
     }

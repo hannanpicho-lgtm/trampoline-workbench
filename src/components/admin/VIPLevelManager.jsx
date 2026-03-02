@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Crown, RefreshCw, Edit, Save, X, Zap } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function VIPLevelManager() {
@@ -23,7 +24,7 @@ export default function VIPLevelManager() {
 
   const loadCurrentUser = async () => {
     try {
-      const user = await base44.auth.me();
+      const user = await backendClient.auth.me();
       setCurrentUser(user);
     } catch (error) {
       console.error('Failed to load current user');

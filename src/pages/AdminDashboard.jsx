@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Users, DollarSign, CheckCircle, BarChart3, Award, Package, Cog, Lock, RefreshCw, CreditCard, Shield, AlertTriangle, Layers, Crown, Zap, Bell, Target, MessageCircle, Share2 as Share2Icon } from "lucide-react";
 import { Zap as ZapIcon } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import UserManagementList from "../components/admin/UserManagementList";
 import TaskApprovalList from "../components/admin/TaskApprovalList";
@@ -64,7 +65,7 @@ export default function AdminDashboard() {
 
   const checkAdmin = async () => {
     try {
-      const user = await base44.auth.me();
+      const user = await backendClient.auth.me();
       
       // Check if user is super admin or has any admin role
       const isAdmin = user.role === "admin";
@@ -80,7 +81,7 @@ export default function AdminDashboard() {
       setLoading(false);
     } catch (error) {
       toast.error("Authentication required");
-      base44.auth.redirectToLogin();
+      backendClient.auth.redirectToLogin();
     }
   };
 
@@ -125,7 +126,7 @@ export default function AdminDashboard() {
               <NotificationBell userId={currentUser?.id} />
               <button
                 type="button"
-                onClick={() => base44.auth.logout("/")}
+                onClick={() => backendClient.auth.logout("/")}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors"
               >
                 Logout

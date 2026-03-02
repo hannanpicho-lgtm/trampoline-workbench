@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { ArrowRight, Star, CheckCircle, Users, Zap, Award, TrendingUp, Globe, Lock, Smartphone } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 
 export default function LandingPage({ onNavigate }) {
   const [email, setEmail] = useState('');
 
-  const handleSignup = () => base44.auth.redirectToLogin();
-  const handleLogin = () => base44.auth.redirectToLogin();
+  const handleSignup = () => backendClient.auth.redirectToLogin();
+  const handleLogin = () => backendClient.auth.redirectToLogin();
 
   const features = [
     { icon: Zap, title: 'Easy Tasks', description: 'Complete simple tasks and earn money instantly' },
