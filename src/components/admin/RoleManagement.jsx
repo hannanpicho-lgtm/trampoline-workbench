@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Shield, Plus, Trash2, Edit2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 const AVAILABLE_PERMISSIONS = [
@@ -52,7 +52,7 @@ export default function RoleManagement() {
   const loadRoles = async () => {
     setLoading(true);
     try {
-      const data = await base44.entities.Role.list();
+      const data = await backendClient.entities.Role.list();
       setRoles(data);
     } catch (error) {
       toast.error('Failed to load roles');
@@ -69,10 +69,10 @@ export default function RoleManagement() {
 
     try {
       if (editingRole) {
-        await base44.entities.Role.update(editingRole.id, formData);
+        await backendClient.entities.Role.update(editingRole.id, formData);
         toast.success('Role updated successfully');
       } else {
-        await base44.entities.Role.create(formData);
+        await backendClient.entities.Role.create(formData);
         toast.success('Role created successfully');
       }
       loadRoles();
@@ -93,7 +93,7 @@ export default function RoleManagement() {
   const handleDelete = async (roleId) => {
     if (!confirm('Are you sure? This will not affect existing role assignments.')) return;
     try {
-      await base44.entities.Role.delete(roleId);
+      await backendClient.entities.Role.delete(roleId);
       toast.success('Role deleted');
       loadRoles();
     } catch (error) {

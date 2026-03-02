@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search, Edit, RefreshCw, ChevronDown, Eye, Filter, X, Download, CheckSquare, Square, Trash2, Users as UsersIcon, ArrowUpDown } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import EditUserModal from "./EditUserModal";
 import UserRoleAssignment from "./UserRoleAssignment";
@@ -86,7 +87,7 @@ export default function UserManagementList() {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const usersData = await base44.entities.AppUser.list("-created_date", 500);
+      const usersData = await backendClient.entities.AppUser.list("-created_date", 500);
       setUsers(usersData);
       setFilteredUsers(usersData);
     } catch (error) {
@@ -184,7 +185,7 @@ export default function UserManagementList() {
 
     try {
       for (const userId of selectedUsers) {
-        await base44.entities.AppUser.update(userId, { vipLevel: newLevel });
+        await backendClient.entities.AppUser.update(userId, { vipLevel: newLevel });
       }
       toast.success(`Updated ${selectedUsers.length} users to ${newLevel}!`);
       setSelectedUsers([]);
@@ -199,7 +200,7 @@ export default function UserManagementList() {
     if (!confirm(`Are you sure you want to ${action} this user account?`)) return;
 
     try {
-      await base44.entities.AppUser.update(userId, {
+      await backendClient.entities.AppUser.update(userId, {
         isDeactivated: !currentStatus
       });
       toast.success(`User ${action}d successfully`);

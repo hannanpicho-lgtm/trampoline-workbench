@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Save, X, Package, Award } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
@@ -27,8 +27,8 @@ export default function TaskSetManager() {
   const loadData = async () => {
     try {
       const [sets, prods] = await Promise.all([
-        base44.entities.TaskSet.list("-priority"),
-        base44.entities.Product.filter({ isActive: true })
+        backendClient.entities.TaskSet.list("-priority"),
+        backendClient.entities.Product.filter({ isActive: true })
       ]);
       setTaskSets(sets);
       setProducts(prods);
@@ -45,10 +45,10 @@ export default function TaskSetManager() {
       }
 
       if (editingSet) {
-        await base44.entities.TaskSet.update(editingSet.id, formData);
+        await backendClient.entities.TaskSet.update(editingSet.id, formData);
         toast.success("Task set updated");
       } else {
-        await base44.entities.TaskSet.create(formData);
+        await backendClient.entities.TaskSet.create(formData);
         toast.success("Task set created");
       }
 
@@ -77,7 +77,7 @@ export default function TaskSetManager() {
   const handleDelete = async (id) => {
     if (!confirm("Delete this task set?")) return;
     try {
-      await base44.entities.TaskSet.delete(id);
+      await backendClient.entities.TaskSet.delete(id);
       toast.success("Task set deleted");
       loadData();
     } catch (error) {

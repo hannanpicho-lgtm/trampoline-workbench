@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Tag } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function TaskCategoryManager() {
@@ -35,8 +35,8 @@ export default function TaskCategoryManager() {
     setLoading(true);
     try {
       const [categoriesData, prioritiesData] = await Promise.all([
-        base44.entities.TaskCategory.list('displayOrder'),
-        base44.entities.TaskPriority.list('level')
+        backendClient.entities.TaskCategory.list('displayOrder'),
+        backendClient.entities.TaskPriority.list('level')
       ]);
       setCategories(categoriesData);
       setPriorities(prioritiesData);
@@ -55,10 +55,10 @@ export default function TaskCategoryManager() {
 
     try {
       if (editingCategory) {
-        await base44.entities.TaskCategory.update(editingCategory.id, categoryForm);
+        await backendClient.entities.TaskCategory.update(editingCategory.id, categoryForm);
         toast.success('Category updated');
       } else {
-        await base44.entities.TaskCategory.create(categoryForm);
+        await backendClient.entities.TaskCategory.create(categoryForm);
         toast.success('Category created');
       }
       resetCategoryForm();
@@ -76,10 +76,10 @@ export default function TaskCategoryManager() {
 
     try {
       if (editingPriority) {
-        await base44.entities.TaskPriority.update(editingPriority.id, priorityForm);
+        await backendClient.entities.TaskPriority.update(editingPriority.id, priorityForm);
         toast.success('Priority updated');
       } else {
-        await base44.entities.TaskPriority.create(priorityForm);
+        await backendClient.entities.TaskPriority.create(priorityForm);
         toast.success('Priority created');
       }
       resetPriorityForm();
@@ -92,7 +92,7 @@ export default function TaskCategoryManager() {
   const handleDeleteCategory = async (id) => {
     if (!confirm('Delete this category?')) return;
     try {
-      await base44.entities.TaskCategory.delete(id);
+      await backendClient.entities.TaskCategory.delete(id);
       toast.success('Category deleted');
       loadData();
     } catch (error) {
@@ -103,7 +103,7 @@ export default function TaskCategoryManager() {
   const handleDeletePriority = async (id) => {
     if (!confirm('Delete this priority?')) return;
     try {
-      await base44.entities.TaskPriority.delete(id);
+      await backendClient.entities.TaskPriority.delete(id);
       toast.success('Priority deleted');
       loadData();
     } catch (error) {

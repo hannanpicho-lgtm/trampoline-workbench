@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { CheckCircle, XCircle } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function TaskApprovalList() {
@@ -17,9 +17,9 @@ export default function TaskApprovalList() {
     setLoading(true);
     try {
       const [tasksData, productsData, usersData] = await Promise.all([
-        base44.entities.UserTask.filter({ status: "pending" }, "-created_date", 50),
-        base44.entities.Product.list(),
-        base44.entities.AppUser.list()
+        backendClient.entities.UserTask.filter({ status: "pending" }, "-created_date", 50),
+        backendClient.entities.Product.list(),
+        backendClient.entities.AppUser.list()
       ]);
       setTasks(tasksData);
       setProducts(productsData);
@@ -36,7 +36,7 @@ export default function TaskApprovalList() {
 
   const handleApprove = async (task) => {
     try {
-      await base44.entities.UserTask.update(task.id, {
+      await backendClient.entities.UserTask.update(task.id, {
         status: "approved",
         approvedAt: new Date().toISOString()
       });
@@ -51,7 +51,7 @@ export default function TaskApprovalList() {
     if (!confirm("Reject this task?")) return;
     
     try {
-      await base44.entities.UserTask.update(task.id, {
+      await backendClient.entities.UserTask.update(task.id, {
         status: "rejected"
       });
       toast.success("Task rejected");
