@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { AlertTriangle, TrendingUp, Users, DollarSign, Clock } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function AdminAlerts() {
   const [alerts, setAlerts] = useState([]);
@@ -21,11 +21,11 @@ export default function AdminAlerts() {
   const loadAlerts = async () => {
     try {
       // Get pending withdrawals
-      const payouts = await base44.entities.CommissionPayout.filter({ status: "pending" });
+      const payouts = await backendClient.entities.CommissionPayout.filter({ status: "pending" });
       const pendingAmount = payouts.reduce((sum, p) => sum + p.amount, 0);
       
       // Get users with low balance and incomplete withdrawals
-      const appUsers = await base44.entities.AppUser.list("-created_date", 100);
+      const appUsers = await backendClient.entities.AppUser.list("-created_date", 100);
       const lowBalanceUsers = appUsers.filter(u => u.balance < 10).length;
 
       // Check for high volume of withdrawals in last 24 hours

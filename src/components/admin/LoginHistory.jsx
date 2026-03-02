@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { Globe, MapPin, Clock, Smartphone } from "lucide-react";
 
 export default function LoginHistory() {
@@ -15,7 +15,7 @@ export default function LoginHistory() {
     setLoading(true);
     try {
       let query = {};
-      const allLogins = await base44.entities.LoginHistory.list("-loginTime", 100);
+      const allLogins = await backendClient.entities.LoginHistory.list("-loginTime", 100);
       
       setLogins(allLogins);
     } catch (error) {

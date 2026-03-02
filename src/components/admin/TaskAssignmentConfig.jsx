@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { Settings, Save, Plus, Trash2, Play, Pause, RefreshCw, Zap, Clock, Users, TrendingUp } from "lucide-react";
@@ -18,7 +19,7 @@ export default function TaskAssignmentConfig() {
   const loadConfigs = async () => {
     setLoading(true);
     try {
-      const data = await base44.entities.TaskAssignmentConfig.list();
+      const data = await backendClient.entities.TaskAssignmentConfig.list();
       setConfigs(data);
     } catch (error) {
       toast.error("Failed to load configurations");
@@ -30,10 +31,10 @@ export default function TaskAssignmentConfig() {
   const handleSave = async (config) => {
     try {
       if (config.id) {
-        await base44.entities.TaskAssignmentConfig.update(config.id, config);
+        await backendClient.entities.TaskAssignmentConfig.update(config.id, config);
         toast.success("Configuration updated");
       } else {
-        await base44.entities.TaskAssignmentConfig.create(config);
+        await backendClient.entities.TaskAssignmentConfig.create(config);
         toast.success("Configuration created");
       }
       setShowForm(false);
@@ -47,7 +48,7 @@ export default function TaskAssignmentConfig() {
   const handleDelete = async (id) => {
     if (!confirm("Delete this configuration?")) return;
     try {
-      await base44.entities.TaskAssignmentConfig.delete(id);
+      await backendClient.entities.TaskAssignmentConfig.delete(id);
       toast.success("Configuration deleted");
       loadConfigs();
     } catch (error) {
@@ -57,7 +58,7 @@ export default function TaskAssignmentConfig() {
 
   const handleToggleActive = async (config) => {
     try {
-      await base44.entities.TaskAssignmentConfig.update(config.id, {
+      await backendClient.entities.TaskAssignmentConfig.update(config.id, {
         isActive: !config.isActive
       });
       toast.success(config.isActive ? "Configuration disabled" : "Configuration enabled");

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { RefreshCw, Search, CheckCircle, AlertCircle, Clock, TrendingUp } from "lucide-react";
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
@@ -29,7 +30,7 @@ export default function TaskResetManager() {
   const loadUsersNeedingReset = async () => {
     setLoading(true);
     try {
-      const usersData = await base44.entities.AppUser.list("-created_date", 200);
+      const usersData = await backendClient.entities.AppUser.list("-created_date", 200);
       // Filter to show users either needing reset or close to task limit
       const filtered = usersData.filter(u => 
         u.needsReset || (u.tasksInCurrentSet >= 35)

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Award, TrendingUp, Users } from "lucide-react";
 
@@ -24,7 +24,7 @@ export default function VIPAnalytics() {
   const loadVIPAnalytics = async () => {
     setLoading(true);
     try {
-      const appUsers = await base44.entities.AppUser.list();
+      const appUsers = await backendClient.entities.AppUser.list();
 
       // VIP Distribution
       const distribution = {};
