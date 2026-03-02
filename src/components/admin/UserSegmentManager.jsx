@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Users, Plus, Edit, Trash2, RefreshCw, Target, TrendingUp, BarChart3 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function UserSegmentManager() {
@@ -36,8 +36,8 @@ export default function UserSegmentManager() {
     setLoading(true);
     try {
       const [segmentsData, usersData] = await Promise.all([
-        base44.entities.UserSegment.list('-created_date'),
-        base44.entities.AppUser.list('-created_date', 1000)
+        backendClient.entities.UserSegment.list('-created_date'),
+        backendClient.entities.AppUser.list('-created_date', 1000)
       ]);
       setSegments(segmentsData);
       setUsers(usersData);
@@ -117,10 +117,10 @@ export default function UserSegmentManager() {
       };
 
       if (editingSegment) {
-        await base44.entities.UserSegment.update(editingSegment.id, segmentData);
+        await backendClient.entities.UserSegment.update(editingSegment.id, segmentData);
         toast.success('Segment updated successfully');
       } else {
-        await base44.entities.UserSegment.create(segmentData);
+        await backendClient.entities.UserSegment.create(segmentData);
         toast.success(`Segment created with ${matchingUsers.length} users`);
       }
 
@@ -135,7 +135,7 @@ export default function UserSegmentManager() {
     if (!confirm('Delete this segment?')) return;
 
     try {
-      await base44.entities.UserSegment.delete(segmentId);
+      await backendClient.entities.UserSegment.delete(segmentId);
       toast.success('Segment deleted');
       loadData();
     } catch (error) {
@@ -158,7 +158,7 @@ export default function UserSegmentManager() {
     const matchingUsers = calculateSegmentUsers(segment.criteria);
 
     try {
-      await base44.entities.UserSegment.update(segmentId, {
+      await backendClient.entities.UserSegment.update(segmentId, {
         userCount: matchingUsers.length,
         lastCalculated: new Date().toISOString()
       });

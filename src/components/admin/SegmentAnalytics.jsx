@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, Users, DollarSign, CheckCircle, Bell, Eye, BarChart3 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -26,9 +26,9 @@ export default function SegmentAnalytics() {
     setLoading(true);
     try {
       const [segmentsData, usersData, notificationsData] = await Promise.all([
-        base44.entities.UserSegment.filter({ isActive: true }),
-        base44.entities.AppUser.list('-created_date', 1000),
-        base44.entities.Notification.list('-created_date', 500)
+        backendClient.entities.UserSegment.filter({ isActive: true }),
+        backendClient.entities.AppUser.list('-created_date', 1000),
+        backendClient.entities.Notification.list('-created_date', 500)
       ]);
       setSegments(segmentsData);
       setUsers(usersData);
@@ -45,7 +45,7 @@ export default function SegmentAnalytics() {
 
   const loadSegmentAnalytics = async () => {
     try {
-      const analyticsData = await base44.entities.SegmentAnalytics.filter(
+      const analyticsData = await backendClient.entities.SegmentAnalytics.filter(
         { segmentId: selectedSegment.id },
         '-date',
         30

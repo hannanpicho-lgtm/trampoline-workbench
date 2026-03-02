@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Target, Plus, Trash2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function SegmentTaskAssigner() {
@@ -24,9 +24,9 @@ export default function SegmentTaskAssigner() {
     setLoading(true);
     try {
       const [segmentsData, productsData, assignmentsData] = await Promise.all([
-        base44.entities.UserSegment.filter({ isActive: true }),
-        base44.entities.Product.filter({ isActive: true }),
-        base44.entities.SegmentTaskAssignment.list('-created_date')
+        backendClient.entities.UserSegment.filter({ isActive: true }),
+        backendClient.entities.Product.filter({ isActive: true }),
+        backendClient.entities.SegmentTaskAssignment.list('-created_date')
       ]);
       setSegments(segmentsData);
       setProducts(productsData);
@@ -45,7 +45,7 @@ export default function SegmentTaskAssigner() {
     }
 
     try {
-      await base44.entities.SegmentTaskAssignment.create(formData);
+      await backendClient.entities.SegmentTaskAssignment.create(formData);
       toast.success('Task assignment created');
       setShowForm(false);
       setFormData({ segmentId: '', productId: '', assignmentType: 'preferred', priority: 0 });
@@ -58,7 +58,7 @@ export default function SegmentTaskAssigner() {
   const handleDeleteAssignment = async (id) => {
     if (!confirm('Delete this assignment?')) return;
     try {
-      await base44.entities.SegmentTaskAssignment.delete(id);
+      await backendClient.entities.SegmentTaskAssignment.delete(id);
       toast.success('Assignment deleted');
       loadData();
     } catch (error) {

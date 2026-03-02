@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { CheckCircle, XCircle, DollarSign } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function WithdrawalApprovalList() {
@@ -15,8 +15,8 @@ export default function WithdrawalApprovalList() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const payoutsData = await base44.entities.CommissionPayout.filter({ status: "pending" }, "-priority, -created_date", 100);
-      const usersData = await base44.entities.AppUser.list();
+      const payoutsData = await backendClient.entities.CommissionPayout.filter({ status: "pending" }, "-priority, -created_date", 100);
+      const usersData = await backendClient.entities.AppUser.list();
       
       setWithdrawals(payoutsData);
       setUsers(usersData);
@@ -31,7 +31,7 @@ export default function WithdrawalApprovalList() {
 
   const handleApprove = async (withdrawal) => {
     try {
-      await base44.entities.CommissionPayout.update(withdrawal.id, {
+      await backendClient.entities.CommissionPayout.update(withdrawal.id, {
         status: "approved",
         approvedAt: new Date().toISOString()
       });
@@ -39,9 +39,9 @@ export default function WithdrawalApprovalList() {
       // Notify user
       const user = getUser(withdrawal.userId);
       if (user) {
-        const userAccount = await base44.entities.User.filter({ email: user.created_by });
+        const userAccount = await backendClient.entities.User.filter({ email: user.created_by });
         if (userAccount.length > 0) {
-          await base44.entities.Notification.create({
+          await backendClient.entities.Notification.create({
             userId: userAccount[0].id,
             type: 'payout_status',
             title: '✅ Withdrawal Approved!',
@@ -66,14 +66,14 @@ export default function WithdrawalApprovalList() {
       // Return amount to user's balance
       const user = getUser(withdrawal.userId);
       if (user) {
-        await base44.entities.AppUser.update(user.id, {
+        await backendClient.entities.AppUser.update(user.id, {
           balance: (user.balance || 0) + withdrawal.amount
         });
 
         // Notify user
-        const userAccount = await base44.entities.User.filter({ email: user.created_by });
+        const userAccount = await backendClient.entities.User.filter({ email: user.created_by });
         if (userAccount.length > 0) {
-          await base44.entities.Notification.create({
+          await backendClient.entities.Notification.create({
             userId: userAccount[0].id,
             type: 'payout_status',
             title: '❌ Withdrawal Rejected',
@@ -84,7 +84,7 @@ export default function WithdrawalApprovalList() {
         }
       }
 
-      await base44.entities.CommissionPayout.update(withdrawal.id, {
+      await backendClient.entities.CommissionPayout.update(withdrawal.id, {
         status: "rejected",
         rejectedAt: new Date().toISOString()
       });

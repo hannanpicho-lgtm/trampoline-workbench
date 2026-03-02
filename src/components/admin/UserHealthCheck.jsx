@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -37,9 +37,9 @@ export default function UserHealthCheck() {
   const runHealthCheck = async () => {
     setLoading(true);
     try {
-      const users = await base44.entities.AppUser.filter({ vipLevel: 'Bronze' });
-      const allTasks = await base44.entities.UserTask.list();
-      const products = await base44.entities.Product.list();
+      const users = await backendClient.entities.AppUser.filter({ vipLevel: 'Bronze' });
+      const allTasks = await backendClient.entities.UserTask.list();
+      const products = await backendClient.entities.Product.list();
 
       const results = users.map(user => {
         const userTasks = allTasks.filter(t => t.userId === user.id);
