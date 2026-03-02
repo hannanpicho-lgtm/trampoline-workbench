@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Loader2, X, AlertCircle, CheckCircle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function CreateTrainingAccountModal({ referrerCode, onClose, onSuccess }) {
@@ -28,7 +28,7 @@ export default function CreateTrainingAccountModal({ referrerCode, onClose, onSu
     setIsLoading(true);
 
     try {
-      const response = await base44.functions.invoke('createTrainingAccount', {
+      const response = await backendClient.trainingAccounts.create({
         phone: trainingPhone.trim(),
         inviteCode: referrerCode,
         accountName: accountName.trim() || undefined

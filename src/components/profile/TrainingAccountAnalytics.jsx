@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, BarChart3, Users, DollarSign, Activity, Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function TrainingAccountAnalytics({ appUser }) {
@@ -20,10 +20,7 @@ export default function TrainingAccountAnalytics({ appUser }) {
     setLoading(true);
     try {
       // Get all training accounts
-      const trainingAccounts = await base44.entities.AppUser.filter({
-        referredBy: appUser.id,
-        isTrainingAccount: true
-      });
+      const trainingAccounts = await backendClient.trainingAccounts.listByReferrer(appUser.id);
 
       if (trainingAccounts.length === 0) {
         setAnalytics({
@@ -39,15 +36,10 @@ export default function TrainingAccountAnalytics({ appUser }) {
       }
 
       // Get training logs
-      const logs = await base44.entities.TrainingAccountLog.filter({
-        referrerId: appUser.id
-      });
+      const logs = await backendClient.trainingLogs.listByReferrer(appUser.id);
 
       // Get transactions for profit shares
-      const transactions = await base44.entities.Transaction.filter({
-        userId: appUser.id,
-        type: 'training_profit_share'
-      });
+      const transactions = await backendClient.transactions.listTrainingProfitShareByUser(appUser.id);
 
       // Calculate analytics
       const totalEarnings = logs.reduce((sum, log) => sum + (log.totalEarnings || 0), 0);

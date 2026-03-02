@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Eye, EyeOff, Loader2, TrendingUp, Users, DollarSign } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 import CreateTrainingAccountModal from '../modals/CreateTrainingAccountModal';
 
@@ -23,16 +23,11 @@ export default function TrainingAccountsManager({ appUser }) {
     setLoading(true);
     try {
       // Get all training accounts created with this referrer's code
-      const accounts = await base44.entities.AppUser.filter({
-        referredBy: appUser.id,
-        isTrainingAccount: true
-      });
+      const accounts = await backendClient.trainingAccounts.listByReferrer(appUser.id);
 
       // Get training account logs
       const logsData = accounts.length > 0 
-        ? await base44.entities.TrainingAccountLog.filter({
-            referrerId: appUser.id
-          })
+        ? await backendClient.trainingLogs.listByReferrer(appUser.id)
         : [];
 
       setTrainingAccounts(accounts || []);

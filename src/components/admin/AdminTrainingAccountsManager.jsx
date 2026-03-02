@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Filter, Download, Trash2, ToggleLeft, ToggleRight, Search } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function AdminTrainingAccountsManager() {
@@ -18,12 +18,10 @@ export default function AdminTrainingAccountsManager() {
     setLoading(true);
     try {
       // Get all training accounts
-      const allAccounts = await base44.entities.AppUser.filter({
-        isTrainingAccount: true
-      });
+      const allAccounts = await backendClient.trainingAccounts.listAll();
 
       // Get all logs
-      const allLogs = await base44.entities.TrainingAccountLog.filter({});
+      const allLogs = await backendClient.trainingLogs.listAll();
 
       let filtered = allAccounts;
 
@@ -58,9 +56,7 @@ export default function AdminTrainingAccountsManager() {
       const log = logs.find(l => l.trainingAccountId === accountId);
       if (log) {
         const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-        await base44.entities.TrainingAccountLog.update(log.id, {
-          status: newStatus
-        });
+        await backendClient.trainingLogs.updateStatus(log.id, newStatus);
         toast.success(`Account ${newStatus}`);
         loadAllTrainingAccounts();
       }
@@ -73,10 +69,10 @@ export default function AdminTrainingAccountsManager() {
     if (!confirm('Are you sure you want to delete this training account? This action cannot be undone.')) return;
 
     try {
-      await base44.entities.AppUser.delete(accountId);
+      await backendClient.trainingAccounts.delete(accountId);
       const log = logs.find(l => l.trainingAccountId === accountId);
       if (log) {
-        await base44.entities.TrainingAccountLog.delete(log.id);
+        await backendClient.trainingLogs.delete(log.id);
       }
       toast.success('Account deleted');
       loadAllTrainingAccounts();
