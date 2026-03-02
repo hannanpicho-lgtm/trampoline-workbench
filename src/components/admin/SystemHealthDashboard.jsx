@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Activity, Database, Server, AlertTriangle, CheckCircle, TrendingUp, Users, DollarSign } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 
 export default function SystemHealthDashboard() {
   const [health, setHealth] = useState({
@@ -26,22 +26,22 @@ export default function SystemHealthDashboard() {
       const startTime = performance.now();
       
       // Test database connection
-      const users = await base44.entities.AppUser.filter({}, null, 1);
+      const users = await backendClient.entities.AppUser.filter({}, null, 1);
       const apiResponse = performance.now() - startTime;
 
       // Get active users (logged in last 24h)
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      const allUsers = await base44.entities.AppUser.filter({});
+      const allUsers = await backendClient.entities.AppUser.filter({});
       const activeUsers = allUsers.filter(u => 
         u.lastLogin && new Date(u.lastLogin) >= yesterday
       ).length;
 
       // Get pending tasks
-      const pendingTasks = await base44.entities.UserTask.filter({ status: 'pending' });
+      const pendingTasks = await backendClient.entities.UserTask.filter({ status: 'pending' });
 
       // Get pending withdrawals
-      const pendingWithdrawals = await base44.entities.Transaction.filter({
+      const pendingWithdrawals = await backendClient.entities.Transaction.filter({
         type: 'withdrawal',
         status: 'pending'
       });
@@ -49,7 +49,7 @@ export default function SystemHealthDashboard() {
       // Get today's transactions
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const allTransactions = await base44.entities.Transaction.filter({}, '-created_date', 1000);
+      const allTransactions = await backendClient.entities.Transaction.filter({}, '-created_date', 1000);
       const todayTransactions = allTransactions.filter(t => 
         new Date(t.created_date) >= today
       );

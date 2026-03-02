@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Crown, AlertTriangle } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function AssignPremiumProduct({ userId, userName, onSuccess, onClose }) {
@@ -16,7 +16,7 @@ export default function AssignPremiumProduct({ userId, userName, onSuccess, onCl
 
   const loadProducts = async () => {
     try {
-      const productsData = await base44.entities.Product.filter({ isActive: true });
+      const productsData = await backendClient.entities.Product.filter({ isActive: true });
       setProducts(productsData);
     } catch (error) {
       toast.error("Failed to load products");
@@ -36,7 +36,7 @@ export default function AssignPremiumProduct({ userId, userName, onSuccess, onCl
       // If product is not premium but admin wants to make it premium for this task
       let finalProduct = product;
       if (makePremium && !product.isPremium) {
-        await base44.entities.Product.update(product.id, {
+        await backendClient.entities.Product.update(product.id, {
           isPremium: true,
           commission: product.commission * 10
         });
@@ -45,7 +45,7 @@ export default function AssignPremiumProduct({ userId, userName, onSuccess, onCl
       }
 
       // Create pending task at specific position
-      await base44.entities.UserTask.create({
+      await backendClient.entities.UserTask.create({
         userId: userId,
         productId: finalProduct.id,
         commission: finalProduct.commission,

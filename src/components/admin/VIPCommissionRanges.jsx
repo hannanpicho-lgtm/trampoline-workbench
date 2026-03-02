@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { DollarSign, Save, RefreshCw } from "lucide-react";
 import CommissionCalculator from "./CommissionCalculator";
@@ -26,7 +26,7 @@ export default function VIPCommissionRanges() {
   const loadRanges = async () => {
     setLoading(true);
     try {
-      const settings = await base44.entities.AppSettings.list();
+      const settings = await backendClient.entities.AppSettings.list();
       const loadedRanges = { ...DEFAULT_RANGES };
 
       VIP_LEVELS.forEach(level => {
@@ -52,7 +52,7 @@ export default function VIPCommissionRanges() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const settings = await base44.entities.AppSettings.list();
+      const settings = await backendClient.entities.AppSettings.list();
       
       for (const level of VIP_LEVELS) {
         const minKey = `vip_commission_min_${level}`;
@@ -62,11 +62,11 @@ export default function VIPCommissionRanges() {
         const maxSetting = settings.find(s => s.settingKey === maxKey);
 
         if (minSetting) {
-          await base44.entities.AppSettings.update(minSetting.id, {
+          await backendClient.entities.AppSettings.update(minSetting.id, {
             settingValue: ranges[level].min.toString()
           });
         } else {
-          await base44.entities.AppSettings.create({
+          await backendClient.entities.AppSettings.create({
             settingKey: minKey,
             settingValue: ranges[level].min.toString(),
             description: `Minimum total commission for ${level} VIP (both sets)`
@@ -74,11 +74,11 @@ export default function VIPCommissionRanges() {
         }
 
         if (maxSetting) {
-          await base44.entities.AppSettings.update(maxSetting.id, {
+          await backendClient.entities.AppSettings.update(maxSetting.id, {
             settingValue: ranges[level].max.toString()
           });
         } else {
-          await base44.entities.AppSettings.create({
+          await backendClient.entities.AppSettings.create({
             settingKey: maxKey,
             settingValue: ranges[level].max.toString(),
             description: `Maximum total commission for ${level} VIP (both sets)`

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { RefreshCw, Loader2, CheckCircle, XCircle, Clock, Play } from "lucide-react";
 import { triggerQueueProcessing, getQueueStatistics } from "../queue/TaskQueueManager";
@@ -21,7 +21,7 @@ export default function TaskQueueMonitor() {
     try {
       const [statistics, items] = await Promise.all([
         getQueueStatistics(),
-        base44.entities.TaskQueue.filter({ status: filter }, "-priority")
+        backendClient.entities.TaskQueue.filter({ status: filter }, "-priority")
       ]);
       
       setStats(statistics);

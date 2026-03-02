@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { Crown, Plus, Edit, Trash2, CheckCircle, XCircle, TrendingUp } from "lucide-react";
@@ -39,8 +40,8 @@ export default function VIPUpgradeManager() {
     setLoading(true);
     try {
       const [rulesData, requestsData] = await Promise.all([
-        base44.entities.VIPUpgradeRule.list("-created_date"),
-        base44.entities.VIPUpgradeRequest.list("-created_date")
+        backendClient.entities.VIPUpgradeRule.list("-created_date"),
+        backendClient.entities.VIPUpgradeRequest.list("-created_date")
       ]);
       setRules(rulesData);
       setRequests(requestsData);
@@ -55,10 +56,10 @@ export default function VIPUpgradeManager() {
     e.preventDefault();
     try {
       if (editingRule) {
-        await base44.entities.VIPUpgradeRule.update(editingRule.id, formData);
+        await backendClient.entities.VIPUpgradeRule.update(editingRule.id, formData);
         toast.success("Rule updated");
       } else {
-        await base44.entities.VIPUpgradeRule.create(formData);
+        await backendClient.entities.VIPUpgradeRule.create(formData);
         toast.success("Rule created");
       }
       resetForm();
@@ -71,7 +72,7 @@ export default function VIPUpgradeManager() {
   const handleDeleteRule = async (ruleId) => {
     if (!confirm("Delete this upgrade rule?")) return;
     try {
-      await base44.entities.VIPUpgradeRule.delete(ruleId);
+      await backendClient.entities.VIPUpgradeRule.delete(ruleId);
       toast.success("Rule deleted");
       loadData();
     } catch (error) {
