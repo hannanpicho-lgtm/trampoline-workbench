@@ -195,10 +195,97 @@ const authApi = {
 	}
 };
 
+const createEntityApi = (entityName) => ({
+	async list(sort, limit) {
+		if (resolvedProvider === 'rest') {
+			const data = await restRequest(`/api/entities/${entityName}`, {
+				query: {
+					_sort: sort,
+					_limit: limit
+				}
+			});
+			return data?.items || data || [];
+		}
+
+		return base44.entities[entityName].list(sort, limit);
+	},
+
+	async filter(criteria = {}, sort, limit) {
+		if (resolvedProvider === 'rest') {
+			const data = await restRequest(`/api/entities/${entityName}`, {
+				query: {
+					...criteria,
+					_sort: sort,
+					_limit: limit
+				}
+			});
+			return data?.items || data || [];
+		}
+
+		return base44.entities[entityName].filter(criteria, sort, limit);
+	},
+
+	async create(payload) {
+		if (resolvedProvider === 'rest') {
+			return restRequest(`/api/entities/${entityName}`, {
+				method: 'POST',
+				body: payload
+			});
+		}
+
+		return base44.entities[entityName].create(payload);
+	},
+
+	async bulkCreate(payload) {
+		if (resolvedProvider === 'rest') {
+			return restRequest(`/api/entities/${entityName}/bulk`, {
+				method: 'POST',
+				body: payload
+			});
+		}
+
+		return base44.entities[entityName].bulkCreate(payload);
+	},
+
+	async update(id, payload) {
+		if (resolvedProvider === 'rest') {
+			return restRequest(`/api/entities/${entityName}/${id}`, {
+				method: 'PATCH',
+				body: payload
+			});
+		}
+
+		return base44.entities[entityName].update(id, payload);
+	},
+
+	async delete(id) {
+		if (resolvedProvider === 'rest') {
+			return restRequest(`/api/entities/${entityName}/${id}`, {
+				method: 'DELETE'
+			});
+		}
+
+		return base44.entities[entityName].delete(id);
+	}
+});
+
+const entitiesApi = new Proxy(
+	{},
+	{
+		get: (_target, entityName) => {
+			if (typeof entityName !== 'string') {
+				return undefined;
+			}
+			return createEntityApi(entityName);
+		}
+	}
+);
+
 export const backendProvider = resolvedProvider;
 
 export const backendClient = {
 	auth: authApi,
+	entities: entitiesApi,
 	trainingAccounts: trainingAccountsApi,
 	trainingLogs: trainingLogsApi,
 	transactions: transactionsApi,

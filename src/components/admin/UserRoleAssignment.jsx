@@ -18,8 +18,8 @@ export default function UserRoleAssignment({ userId, userEmail }) {
     setLoading(true);
     try {
       const [roles, assignments] = await Promise.all([
-        base44.entities.Role.list(),
-        base44.entities.UserRole.filter({ userId })
+        backendClient.entities.Role.list(),
+        backendClient.entities.UserRole.filter({ userId })
       ]);
 
       setAvailableRoles(roles);
@@ -38,7 +38,7 @@ export default function UserRoleAssignment({ userId, userEmail }) {
     }
 
     try {
-      await base44.entities.UserRole.create({
+      await backendClient.entities.UserRole.create({
         userId,
         roleId: selectedRoleId,
         assignedBy: await backendClient.auth.me().then(u => u.email)
@@ -54,7 +54,7 @@ export default function UserRoleAssignment({ userId, userEmail }) {
 
   const handleRemoveRole = async (userRoleId) => {
     try {
-      await base44.entities.UserRole.delete(userRoleId);
+      await backendClient.entities.UserRole.delete(userRoleId);
       toast.success('Role removed');
       loadData();
     } catch (error) {

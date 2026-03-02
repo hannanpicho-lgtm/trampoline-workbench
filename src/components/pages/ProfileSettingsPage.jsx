@@ -35,7 +35,7 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
   const loadAppUser = async () => {
     if (!currentUser?.email) return;
     try {
-      const users = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const users = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       if (users.length > 0) {
         setAppUser(users[0]);
       }
@@ -47,8 +47,8 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
   const loadBadges = async () => {
     try {
       const [badges, userBadgesData] = await Promise.all([
-        base44.entities.Badge.list(),
-        currentUser?.id ? base44.entities.UserBadge.filter({ userId: currentUser.id }) : Promise.resolve([])
+        backendClient.entities.Badge.list(),
+        currentUser?.id ? backendClient.entities.UserBadge.filter({ userId: currentUser.id }) : Promise.resolve([])
       ]);
       setAllBadges(badges);
       setUserBadges(userBadgesData);
@@ -60,12 +60,12 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
   const loadNotificationPrefs = async () => {
     if (!currentUser?.id) return;
     try {
-      const prefs = await base44.entities.NotificationPreference.filter({ userId: currentUser.id });
+      const prefs = await backendClient.entities.NotificationPreference.filter({ userId: currentUser.id });
       if (prefs.length > 0) {
         setNotificationPrefs(prefs[0]);
       } else {
         // Create default preferences if none exist
-        const newPrefs = await base44.entities.NotificationPreference.create({
+        const newPrefs = await backendClient.entities.NotificationPreference.create({
           userId: currentUser.id,
           emailNotifications: true,
           inAppNotifications: true,
@@ -87,7 +87,7 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
     if (!currentUser?.id) return;
     setLoadingTransactions(true);
     try {
-      const txData = await base44.entities.Transaction.filter(
+      const txData = await backendClient.entities.Transaction.filter(
         { userId: currentUser.id },
         "-created_date",
         20
@@ -145,9 +145,9 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
       });
 
       // Update AppUser
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       if (appUserData.length > 0) {
-        await base44.entities.AppUser.update(appUserData[0].id, {
+        await backendClient.entities.AppUser.update(appUserData[0].id, {
           phone: formData.phone,
           bio: formData.bio,
           favoriteGames: formData.favoriteGames,
@@ -218,7 +218,7 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
 
     setIsSaving(true);
     try {
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       
       if (appUserData.length === 0) {
         toast.error("User data not found");
@@ -234,7 +234,7 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
       }
 
       // Update transaction password
-      await base44.entities.AppUser.update(appUserData[0].id, {
+      await backendClient.entities.AppUser.update(appUserData[0].id, {
         transactionPassword: txPasswordData.newTxPassword
       });
 
@@ -256,9 +256,9 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       if (appUserData.length > 0) {
-        await base44.entities.AppUser.update(appUserData[0].id, {
+        await backendClient.entities.AppUser.update(appUserData[0].id, {
           profilePicture: file_url
         });
 
@@ -276,9 +276,9 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
     setLanguage(newLanguage);
     setIsSaving(true);
     try {
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       if (appUserData.length > 0) {
-        await base44.entities.AppUser.update(appUserData[0].id, {
+        await backendClient.entities.AppUser.update(appUserData[0].id, {
           language: newLanguage
         });
         onUserUpdate({ ...currentUser, language: newLanguage });
@@ -298,7 +298,7 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
     setNotificationPrefs(updated);
 
     try {
-      await base44.entities.NotificationPreference.update(notificationPrefs.id, { [field]: !notificationPrefs[field] });
+      await backendClient.entities.NotificationPreference.update(notificationPrefs.id, { [field]: !notificationPrefs[field] });
       toast.success("Notification preferences updated");
     } catch (error) {
       toast.error("Failed to update preferences");

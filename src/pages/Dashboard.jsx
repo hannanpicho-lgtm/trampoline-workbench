@@ -128,14 +128,14 @@ export default function Dashboard() {
         }
 
         // Fetch additional user data from AppUser entity
-        const appUserData = await base44.entities.AppUser.filter({ created_by: user.email });
+        const appUserData = await backendClient.entities.AppUser.filter({ created_by: user.email });
         if (appUserData.length > 0) {
           // Check if this is a new user (first login in last minute)
           const lastLogin = appUserData[0].lastLogin;
           const isNewUser = !lastLogin || (Date.now() - new Date(lastLogin).getTime() < 60000);
 
           // Update last login
-          await base44.entities.AppUser.update(appUserData[0].id, {
+          await backendClient.entities.AppUser.update(appUserData[0].id, {
             lastLogin: new Date().toISOString()
           });
           setCurrentUser({ ...user, ...appUserData[0] });
@@ -150,7 +150,7 @@ export default function Dashboard() {
         }
         
         // Load featured products
-        const products = await base44.entities.Product.filter({ isActive: true }, "-created_date", 50);
+        const products = await backendClient.entities.Product.filter({ isActive: true }, "-created_date", 50);
         setAllProducts(products);
         setFeaturedProducts(products.slice(0, 6));
         

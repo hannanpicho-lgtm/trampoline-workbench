@@ -69,7 +69,7 @@ export default function AdminDashboard() {
       
       // Check if user is super admin or has any admin role
       const isAdmin = user.role === "admin";
-      const userRoles = !isAdmin ? await base44.entities.UserRole.filter({ userId: user.id }) : [];
+      const userRoles = !isAdmin ? await backendClient.entities.UserRole.filter({ userId: user.id }) : [];
       
       if (!isAdmin && userRoles.length === 0) {
         toast.error("Access denied", { description: "Admin access required" });

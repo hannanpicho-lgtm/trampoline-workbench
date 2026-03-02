@@ -25,10 +25,10 @@ export default function TaskAssignmentManager() {
     setLoading(true);
     try {
       const [usersData, typesData, productsData, assignmentsData] = await Promise.all([
-        base44.entities.AppUser.list("-created_date", 100),
-        base44.entities.TaskType.filter({ isActive: true }),
-        base44.entities.Product.filter({ isActive: true }),
-        base44.entities.TaskAssignment.list("-created_date", 50)
+        backendClient.entities.AppUser.list("-created_date", 100),
+        backendClient.entities.TaskType.filter({ isActive: true }),
+        backendClient.entities.Product.filter({ isActive: true }),
+        backendClient.entities.TaskAssignment.list("-created_date", 50)
       ]);
       setUsers(usersData);
       setTaskTypes(typesData);
@@ -52,7 +52,7 @@ export default function TaskAssignmentManager() {
       const dueAt = new Date(Date.now() + selectedTaskType.timeLimit * 60 * 60 * 1000).toISOString();
 
       // Create task offer
-      const taskOffer = await base44.entities.TaskOffer.create({
+      const taskOffer = await backendClient.entities.TaskOffer.create({
         userId: selectedUser.id,
         productId: selectedProduct.id,
         status: "pending",
@@ -61,7 +61,7 @@ export default function TaskAssignmentManager() {
       });
 
       // Create task assignment
-      await base44.entities.TaskAssignment.create({
+      await backendClient.entities.TaskAssignment.create({
         userId: selectedUser.id,
         taskOfferId: taskOffer.id,
         productId: selectedProduct.id,
@@ -93,7 +93,7 @@ export default function TaskAssignmentManager() {
     if (!confirm("Cancel this assignment?")) return;
 
     try {
-      await base44.entities.TaskAssignment.update(assignmentId, {
+      await backendClient.entities.TaskAssignment.update(assignmentId, {
         status: "cancelled"
       });
       toast.success("Assignment cancelled");

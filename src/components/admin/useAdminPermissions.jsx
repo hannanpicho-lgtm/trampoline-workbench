@@ -24,7 +24,7 @@ export function useAdminPermissions() {
       }
 
       // Load user roles and permissions
-      const userRoles = await base44.entities.UserRole.filter({ userId: user.id });
+      const userRoles = await backendClient.entities.UserRole.filter({ userId: user.id });
       
       if (userRoles.length === 0) {
         setPermissions(new Set());
@@ -33,7 +33,7 @@ export function useAdminPermissions() {
       }
 
       const roles = await Promise.all(
-        userRoles.map(ur => base44.entities.Role.filter({ id: ur.roleId }))
+        userRoles.map(ur => backendClient.entities.Role.filter({ id: ur.roleId }))
       );
 
       const perms = new Set();

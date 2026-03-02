@@ -40,7 +40,7 @@ export default function InvitationCodeManager() {
     setLoading(true);
     try {
       const [codesData, user] = await Promise.all([
-        base44.entities.InvitationCode.list('-created_date', 200),
+        backendClient.entities.InvitationCode.list('-created_date', 200),
         backendClient.auth.me()
       ]);
       setCodes(codesData);
@@ -59,7 +59,7 @@ export default function InvitationCodeManager() {
     }
 
     try {
-      await base44.entities.InvitationCode.create({
+      await backendClient.entities.InvitationCode.create({
         code: formData.code.toUpperCase(),
         createdBy: currentUser.email,
         maxUses: formData.maxUses,
@@ -98,7 +98,7 @@ export default function InvitationCodeManager() {
         });
       }
 
-      await base44.entities.InvitationCode.bulkCreate(bulkCodes);
+      await backendClient.entities.InvitationCode.bulkCreate(bulkCodes);
       toast.success(`Created ${count} invitation codes!`);
       loadData();
     } catch (error) {
@@ -110,7 +110,7 @@ export default function InvitationCodeManager() {
     if (!confirm('Revoke this invitation code?')) return;
 
     try {
-      await base44.entities.InvitationCode.update(codeId, { status: 'revoked' });
+        await backendClient.entities.InvitationCode.update(codeId, { status: 'revoked' });
       toast.success('Code revoked');
       loadData();
     } catch (error) {
@@ -122,7 +122,7 @@ export default function InvitationCodeManager() {
     if (!confirm('Delete this invitation code?')) return;
 
     try {
-      await base44.entities.InvitationCode.delete(codeId);
+        await backendClient.entities.InvitationCode.delete(codeId);
       toast.success('Code deleted');
       loadData();
     } catch (error) {

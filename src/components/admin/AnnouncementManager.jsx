@@ -32,8 +32,8 @@ export default function AnnouncementManager() {
     setLoading(true);
     try {
       const [announcementsData, usersData] = await Promise.all([
-        base44.entities.Announcement.list('-created_date', 100),
-        base44.entities.AppUser.list('-created_date', 500)
+        backendClient.entities.Announcement.list('-created_date', 100),
+        backendClient.entities.AppUser.list('-created_date', 500)
       ]);
       setAnnouncements(announcementsData);
       setUsers(usersData);
@@ -59,10 +59,10 @@ export default function AnnouncementManager() {
       };
 
       if (editingAnnouncement) {
-        await base44.entities.Announcement.update(editingAnnouncement.id, data);
+        await backendClient.entities.Announcement.update(editingAnnouncement.id, data);
         toast.success('Announcement updated');
       } else {
-        await base44.entities.Announcement.create(data);
+        await backendClient.entities.Announcement.create(data);
         toast.success('Announcement created');
       }
 
@@ -76,7 +76,7 @@ export default function AnnouncementManager() {
   const handlePublish = async (announcement) => {
     try {
       // Update announcement status
-      await base44.entities.Announcement.update(announcement.id, {
+      await backendClient.entities.Announcement.update(announcement.id, {
         status: 'published',
         publishedAt: new Date().toISOString()
       });
@@ -90,7 +90,7 @@ export default function AnnouncementManager() {
         announcementId: announcement.id
       }));
 
-      await base44.entities.UserAnnouncement.bulkCreate(userAnnouncements);
+      await backendClient.entities.UserAnnouncement.bulkCreate(userAnnouncements);
 
       // Send notifications if enabled
       if (announcement.sendNotification) {
@@ -103,7 +103,7 @@ export default function AnnouncementManager() {
           relatedId: announcement.id,
           relatedType: 'announcement'
         }));
-        await base44.entities.Notification.bulkCreate(notifications);
+        await backendClient.entities.Notification.bulkCreate(notifications);
       }
 
       toast.success(`Published to ${targetUsers.length} users`);
@@ -155,7 +155,7 @@ export default function AnnouncementManager() {
   const handleDelete = async (id) => {
     if (!confirm('Delete this announcement?')) return;
     try {
-      await base44.entities.Announcement.delete(id);
+      await backendClient.entities.Announcement.delete(id);
       toast.success('Announcement deleted');
       loadData();
     } catch (error) {

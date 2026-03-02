@@ -19,7 +19,7 @@ export default function LeaderboardPage() {
       const me = await backendClient.auth.me();
       setCurrentUser(me);
 
-      const appUsers = await base44.entities.AppUser.list();
+      const appUsers = await backendClient.entities.AppUser.list();
       
       // Sort based on active tab
       let sorted = [...appUsers];

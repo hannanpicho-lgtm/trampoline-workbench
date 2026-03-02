@@ -31,7 +31,7 @@ export default function UserProfile() {
       const currentUser = await backendClient.auth.me();
       setUser(currentUser);
 
-      const appUsers = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUsers = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       if (appUsers.length > 0) {
         setAppUser(appUsers[0]);
       }
@@ -46,7 +46,7 @@ export default function UserProfile() {
     setSaving(true);
     try {
       if (appUser) {
-        await base44.entities.AppUser.update(appUser.id, {
+        await backendClient.entities.AppUser.update(appUser.id, {
           phone: data.phone,
           bio: data.bio
         });
@@ -71,7 +71,7 @@ export default function UserProfile() {
   const handleProfilePictureUpdate = async (pictureUrl) => {
     try {
       if (appUser) {
-        await base44.entities.AppUser.update(appUser.id, {
+        await backendClient.entities.AppUser.update(appUser.id, {
           profilePicture: pictureUrl
         });
         setAppUser(prev => prev ? { ...prev, profilePicture: pictureUrl } : null);
@@ -86,7 +86,7 @@ export default function UserProfile() {
     setSaving(true);
     try {
       if (appUser) {
-        await base44.entities.AppUser.update(appUser.id, {
+        await backendClient.entities.AppUser.update(appUser.id, {
           language: settings.language
         });
         setAppUser(prev => prev ? { ...prev, language: settings.language } : null);

@@ -34,7 +34,7 @@ export default function VIPLevelManager() {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const usersData = await base44.entities.AppUser.list('-created_date', 200);
+      const usersData = await backendClient.entities.AppUser.list('-created_date', 200);
       setUsers(usersData);
     } catch (error) {
       toast.error('Failed to load users');
@@ -45,11 +45,11 @@ export default function VIPLevelManager() {
 
   const handleUpdateVIPLevel = async (userId, targetLevel) => {
     try {
-      await base44.entities.AppUser.update(userId, {
+      await backendClient.entities.AppUser.update(userId, {
         vipLevel: targetLevel
       });
 
-      await base44.entities.Notification.create({
+      await backendClient.entities.Notification.create({
         userId: userId,
         type: 'vip_upgrade',
         title: 'VIP Level Updated! 🎉',
@@ -77,7 +77,7 @@ export default function VIPLevelManager() {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + boostDuration);
 
-      await base44.entities.VIPBoost.create({
+      await backendClient.entities.VIPBoost.create({
         userId: selectedUser.id,
         originalLevel: selectedUser.vipLevel,
         boostedLevel: newVIPLevel,
@@ -88,11 +88,11 @@ export default function VIPLevelManager() {
         status: 'active'
       });
 
-      await base44.entities.AppUser.update(selectedUser.id, {
+      await backendClient.entities.AppUser.update(selectedUser.id, {
         vipLevel: newVIPLevel
       });
 
-      await base44.entities.Notification.create({
+      await backendClient.entities.Notification.create({
         userId: selectedUser.id,
         type: 'vip_boost',
         title: 'Temporary VIP Boost! ⚡',
@@ -123,11 +123,11 @@ export default function VIPLevelManager() {
 
     try {
       for (const user of eligibleUsers) {
-        await base44.entities.AppUser.update(user.id, {
+        await backendClient.entities.AppUser.update(user.id, {
           vipLevel: toLevel
         });
 
-        await base44.entities.Notification.create({
+        await backendClient.entities.Notification.create({
           userId: user.id,
           type: 'vip_upgrade',
           title: 'VIP Level Upgraded! 🎉',
