@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Trophy, Medal, Award, TrendingUp, Flame } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 
 export default function LeaderboardPage() {

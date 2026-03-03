@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Users, DollarSign, CheckCircle, BarChart3, Award, Package, Cog, Lock, RefreshCw, CreditCard, Shield, AlertTriangle, Layers, Crown, Zap, Bell, Target, MessageCircle, Share2 as Share2Icon } from "lucide-react";
 import { Zap as ZapIcon } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import UserManagementList from "../components/admin/UserManagementList";

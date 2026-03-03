@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MessageCircle, Home, Award, ClipboardList, User, Bell, Clock, Globe, Moon, Sun, Check, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 
 // Import page components
@@ -104,7 +103,7 @@ export default function Dashboard() {
   const trackUserLogin = async () => {
     try {
       // Call the trackLogin backend function with device info
-      await base44.functions.invoke('trackLogin', {
+      await backendClient.functions.invoke('trackLogin', {
         ipAddress: null, // Will be captured from request headers
         deviceInfo: navigator.userAgent || 'Unknown'
       });
