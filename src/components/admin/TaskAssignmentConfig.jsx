@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { backendClient } from "@/api/backendClient";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { Settings, Save, Plus, Trash2, Play, Pause, RefreshCw, Zap, Clock, Users, TrendingUp } from "lucide-react";
 
@@ -71,7 +70,7 @@ export default function TaskAssignmentConfig() {
   const handleRunAssignment = async () => {
     setRunningAssignment(true);
     try {
-      const result = await base44.functions.invoke("automatedTaskAssignment");
+      const result = await backendClient.functions.invoke("automatedTaskAssignment");
       setAssignmentStats(result.data);
       toast.success(`Assigned tasks to ${result.data.usersAssigned} users`);
       loadConfigs();

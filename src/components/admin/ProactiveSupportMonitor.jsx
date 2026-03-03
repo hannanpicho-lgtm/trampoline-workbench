@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AlertTriangle, PlayCircle, Loader2, CheckCircle, XCircle } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function ProactiveSupportMonitor() {
@@ -10,7 +10,7 @@ export default function ProactiveSupportMonitor() {
   const runProactiveCheck = async () => {
     setLoading(true);
     try {
-      const result = await base44.functions.invoke('proactiveSupport', {});
+      const result = await backendClient.functions.invoke('proactiveSupport', {});
       
       if (result.data?.success) {
         setLastRun({

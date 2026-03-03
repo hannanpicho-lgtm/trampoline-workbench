@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { RefreshCw, Search, CheckCircle, AlertCircle, Clock, TrendingUp } from "lucide-react";
 import { backendClient } from "@/api/backendClient";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
 export default function TaskResetManager() {
@@ -49,7 +48,7 @@ export default function TaskResetManager() {
 
     setResetting(selectedUser.id);
     try {
-      const response = await base44.functions.invoke('resetUserTasks', {
+      const response = await backendClient.functions.invoke('resetUserTasks', {
         userId: selectedUser.id,
         resetType: resetType
       });
@@ -57,7 +56,7 @@ export default function TaskResetManager() {
       if (response.data.success) {
         // Auto-assign tasks after reset
         try {
-          await base44.functions.invoke('autoAssignTasksAfterReset', { userId: selectedUser.id });
+          await backendClient.functions.invoke('autoAssignTasksAfterReset', { userId: selectedUser.id });
         } catch (assignError) {
           console.error("Failed to auto-assign tasks:", assignError);
         }

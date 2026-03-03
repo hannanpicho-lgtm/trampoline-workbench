@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Zap, AlertTriangle, TrendingUp, Users, CheckCircle, Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function VIPTaskAssignmentMonitor() {
@@ -16,7 +16,7 @@ export default function VIPTaskAssignmentMonitor() {
   const calculateFairness = async () => {
     setLoading(true);
     try {
-      const response = await base44.functions.invoke('calculateTaskFairness', {});
+      const response = await backendClient.functions.invoke('calculateTaskFairness', {});
       setSummary(response.data.summary);
       setIssues(response.data.unfairDistributions || []);
     } catch (error) {
@@ -31,7 +31,7 @@ export default function VIPTaskAssignmentMonitor() {
 
     setRunning(true);
     try {
-      const response = await base44.functions.invoke('enhancedTaskAssignment', {
+      const response = await backendClient.functions.invoke('enhancedTaskAssignment', {
         assignmentLimit: 500
       });
 

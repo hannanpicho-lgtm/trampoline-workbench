@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { X, User, Award, DollarSign, Activity, Clock, MapPin, Shield, Edit2, Flame, Target, Unlock, Crown, Bell } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import AssignPremiumProduct from "./AssignPremiumProduct";
@@ -85,7 +84,7 @@ export default function UserDetailsModal({ userId, onClose, onUpdate }) {
 
       // Auto-assign tasks after unfreeze
       try {
-        await base44.functions.invoke('autoAssignTasksAfterReset', { userId: appUser.id });
+        await backendClient.functions.invoke('autoAssignTasksAfterReset', { userId: appUser.id });
       } catch (assignError) {
         console.error("Failed to auto-assign tasks:", assignError);
       }
