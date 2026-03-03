@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { getBase44Client } from './_shared/base44Client.ts';
 import Stripe from 'npm:stripe';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), {
@@ -6,7 +6,7 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), {
 });
 
 Deno.serve(async (req) => {
-  const base44 = createClientFromRequest(req);
+  const base44 = getBase44Client(req);
   
   try {
     // This is an admin-only scheduled function
