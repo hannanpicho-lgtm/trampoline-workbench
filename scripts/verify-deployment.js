@@ -19,6 +19,8 @@ const checks = {
   warnings: []
 };
 
+const isCi = process.env.CI === 'true';
+
 function checkFile(filePath, description) {
   const fullPath = path.join(projectRoot, filePath);
   if (fs.existsSync(fullPath)) {
@@ -87,7 +89,11 @@ checkFile('TESTING_GUIDE.md', 'Testing guide');
 
 // Check environment
 console.log('\nChecking Environment...');
-checkFile('.env', 'Environment configuration');
+if (isCi) {
+  checks.warnings.push('⚠️ Environment configuration file (.env) check skipped in CI');
+} else {
+  checkFile('.env', 'Environment configuration');
+}
 checkFileContent('package.json', 'test": "vitest', 'Test scripts in package.json');
 
 // Check decoupling guard

@@ -30,6 +30,9 @@ jobs:
 
       - name: Verify decoupling guard
         run: npm run verify:decoupling
+
+      - name: Verify deployment contract
+        run: npm run verify:deployment
       
       - name: Run TypeScript check
         run: npm run typecheck

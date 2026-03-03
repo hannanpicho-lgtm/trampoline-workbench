@@ -14,6 +14,7 @@
     "test:integration": "vitest run tests/integration/",
     "test:watch": "vitest watch",
     "verify:decoupling": "node scripts/verify-decoupling.js",
+    "verify:deployment": "node scripts/verify-deployment.js",
     "test:all": "npm run verify:decoupling && npm run typecheck && npm run lint && npm run test && npm run test:integration"
   },
   "dependencies": {
