@@ -195,6 +195,19 @@ const authApi = {
 	}
 };
 
+const functionsApi = {
+	async invoke(functionName, payload = {}) {
+		if (resolvedProvider === 'rest') {
+			return restRequest(`/api/functions/${functionName}`, {
+				method: 'POST',
+				body: payload
+			});
+		}
+
+		return base44.functions.invoke(functionName, payload);
+	}
+};
+
 const createEntityApi = (entityName) => ({
 	async list(sort, limit) {
 		if (resolvedProvider === 'rest') {
@@ -301,6 +314,7 @@ export const backendProvider = resolvedProvider;
 
 export const backendClient = {
 	auth: authApi,
+	functions: functionsApi,
 	entities: entitiesApi,
 	trainingAccounts: trainingAccountsApi,
 	trainingLogs: trainingLogsApi,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { Sparkles, TrendingUp, Target, Zap, Loader2 } from "lucide-react";
 import { enqueueTask } from "../queue/TaskQueueManager";
@@ -18,7 +18,7 @@ export default function SmartTaskRecommender({ userId, vipLevel, onTaskSelect })
   const loadRecommendations = async () => {
     setLoading(true);
     try {
-      const response = await base44.functions.invoke('smartTaskAssignment', {
+      const response = await backendClient.functions.invoke('smartTaskAssignment', {
         userId,
         limit: 5
       });

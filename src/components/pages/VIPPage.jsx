@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Crown, CheckCircle, Lock, TrendingUp, DollarSign } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 
 const vipLevels = [
@@ -206,7 +205,7 @@ export default function VIPPage({ currentUser, onNavigate }) {
       );
 
       if (rule?.autoUpgrade) {
-        await base44.functions.invoke('processVIPUpgrade', {
+        await backendClient.functions.invoke('processVIPUpgrade', {
           userId: appUser.id,
           targetLevel: selectedUpgrade.level,
           currentLevel: appUser.vipLevel

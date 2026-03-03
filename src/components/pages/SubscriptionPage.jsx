@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Crown, Check, Loader2, Sparkles } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
@@ -35,7 +34,7 @@ export default function SubscriptionPage({ currentUser, onNavigate }) {
   const handleSubscribe = async (tierId) => {
     setPurchasing(true);
     try {
-      const { data } = await base44.functions.invoke('createSubscriptionCheckout', {
+      const { data } = await backendClient.functions.invoke('createSubscriptionCheckout', {
         tierId,
         billingCycle: selectedBilling
       });

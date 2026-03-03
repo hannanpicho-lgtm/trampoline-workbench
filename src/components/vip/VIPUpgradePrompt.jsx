@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { Crown, TrendingUp, CheckCircle, X, Sparkles } from "lucide-react";
@@ -69,7 +68,7 @@ export default function VIPUpgradePrompt({ currentUser, appUser, onUpgradeReques
 
       if (rule.autoUpgrade && rule.requirementType !== "manual_approval") {
         // Auto-upgrade
-        await base44.functions.invoke("processVIPUpgrade", {
+        await backendClient.functions.invoke("processVIPUpgrade", {
           userId: appUser.id,
           targetLevel: rule.toLevel,
           ruleId: rule.id,

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ShoppingBag, Loader2, Sparkles, Tag } from "lucide-react";
 import { backendClient } from "@/api/backendClient";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
 export default function StorePage({ currentUser, onNavigate }) {
@@ -29,7 +28,7 @@ export default function StorePage({ currentUser, onNavigate }) {
   const handlePurchase = async (itemId) => {
     setPurchasing(true);
     try {
-      const { data } = await base44.functions.invoke('createPurchaseCheckout', { itemId });
+      const { data } = await backendClient.functions.invoke('createPurchaseCheckout', { itemId });
 
       if (data.isIframe) {
         toast.error("Checkout only works from published app", {
