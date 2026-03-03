@@ -18,6 +18,7 @@
 - Tightened CI/deploy behavior to fail-fast for guards, tests, and deployment steps.
 - Set typecheck to advisory in CI temporarily due to known pre-existing TypeScript baseline debt.
 - Restored lint as a strict CI gate after excluding generated build artifacts from lint scope.
+- Reduced TypeScript debt from 453 to 0 errors and restored typecheck as a strict CI gate.
 - Standardized markdown metadata dates and refreshed deployment/verification documentation to March 3, 2026.
 
 ### Validation
@@ -40,3 +41,4 @@
 - `00b1b45` Add deployment verification gate to CI
 - `5855b8d` Make lint and typecheck advisory while keeping strict deploy gates
 - `ca44820` Align docs with advisory lint/typecheck CI policy
+- `50e417d` Reduce typecheck debt with adapter and form typing fixes

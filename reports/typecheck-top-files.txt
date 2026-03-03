@@ -1,10 +1,1 @@
-21	src/api/backendClient.js
-17	src/components/auth/SignupPage.jsx
-9	src/components/profile/PasswordChangeSection.jsx
-8	src/lib/app-params.js
-7	src/components/pages/ProfileSettingsPage.jsx
-6	src/components/profile/PersonalInfoSection.jsx
-4	src/pages/Dashboard.jsx
-4	src/components/auth/LoginPage.jsx
-3	src/components/ui/button.jsx
-1	src/components/admin/CommissionCalculator.jsx
+0\t(no remaining files)

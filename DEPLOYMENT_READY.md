@@ -390,7 +390,7 @@ Follow `DEPLOYMENT_GUIDE.md` for comprehensive instructions with:
 - Enforced deployment contract verification in GitHub Actions test workflow.
 - Enforced fail-fast behavior for decoupling/deployment guards, tests, and deployment steps.
 - Restored lint as a strict CI gate after excluding generated build artifacts from lint scope.
-- Kept typecheck as advisory in CI until pre-existing TypeScript baseline debt is remediated.
+- Restored typecheck as a strict CI gate after reducing baseline TypeScript debt.
 
 ---
 

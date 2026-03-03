@@ -315,7 +315,6 @@ jobs:
       
       - name: Type check
         run: npm run typecheck
-        continue-on-error: true # advisory until baseline type debt is cleaned
       
       - name: Lint code
         run: |
