@@ -3,6 +3,10 @@ name: Deploy Training Accounts
 on:
   workflow_dispatch:
     inputs:
+      enable_deploy:
+        description: 'Set to true to run training-account deployment (paused by default)'
+        required: false
+        default: 'false'
       base44_api_key:
         description: 'Manual Base44 API key override (optional)'
         required: false
@@ -19,9 +23,20 @@ env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
+  paused:
+    name: Deployment Paused Notice
+    if: ${{ github.event.inputs.enable_deploy != 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show pause message
+        run: |
+          echo "⏸️ Training-account deployment is paused by default."
+          echo "To run it later, trigger workflow_dispatch with enable_deploy=true."
+
   test:
     name: Pre-deployment Tests
     runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.enable_deploy == 'true' }}
     
     steps:
       - name: Checkout code
@@ -486,7 +501,7 @@ PY
     name: Notify Deployment Status
     runs-on: ubuntu-latest
     needs: [deploy, verify]
-    if: always()
+    if: ${{ always() && github.event.inputs.enable_deploy == 'true' }}
     
     steps:
       - name: Determine status
