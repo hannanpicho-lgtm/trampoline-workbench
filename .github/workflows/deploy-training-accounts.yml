@@ -7,8 +7,13 @@ on:
       - 'functions/createTrainingAccount.ts'
       - 'functions/processTrainingProfitShare.ts'
       - 'functions/completeTaskWithValidation.ts'
+      - 'functions/_shared/base44Client.ts'
       - 'src/components/profile/TrainingAccount*.jsx'
       - 'src/components/admin/AdminTrainingAccounts*.jsx'
+      - 'src/api/backendClient.js'
+      - 'scripts/verify-decoupling.js'
+      - 'scripts/verify-deployment.js'
+      - 'package.json'
       - '.github/workflows/deploy-training-accounts.yml'
 
 env:
@@ -32,6 +37,9 @@ jobs:
       
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+
+      - name: Verify decoupling guard
+        run: npm run verify:decoupling
       
       - name: Type check
         run: npm run typecheck
