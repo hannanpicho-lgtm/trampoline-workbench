@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { DollarSign, TrendingUp, CheckCircle, AlertCircle, Clock } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function PayoutHistory({ currentUser }) {
   const [payouts, setPayouts] = useState([]);
@@ -14,7 +14,7 @@ export default function PayoutHistory({ currentUser }) {
     setLoading(true);
     try {
       if (currentUser?.id) {
-        const data = await base44.entities.CommissionPayout.filter(
+        const data = await backendClient.entities.CommissionPayout.filter(
           { userId: currentUser.id },
           "-requestedAt",
           50

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function ProductCarousel() {
   const [products, setProducts] = useState([]);
@@ -10,7 +10,7 @@ export default function ProductCarousel() {
 
   const loadProducts = async () => {
     try {
-      const data = await base44.entities.Product.filter({ isActive: true }, "-created_date", 10);
+      const data = await backendClient.entities.Product.filter({ isActive: true }, "-created_date", 10);
       setProducts(data);
     } catch (error) {
       console.error("Failed to load products:", error);

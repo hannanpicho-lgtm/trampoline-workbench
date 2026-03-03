@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Users, DollarSign, TrendingUp, Gift } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 
 export default function ReferralStats({ appUser }) {
   const [referralData, setReferralData] = useState({
@@ -19,14 +19,14 @@ export default function ReferralStats({ appUser }) {
     setLoading(true);
     try {
       // Get referral earnings
-      const earnings = await base44.entities.ReferralEarning.filter(
+      const earnings = await backendClient.entities.ReferralEarning.filter(
         { referrerId: appUser.id },
         '-created_date',
         100
       );
 
       // Count referred users
-      const referredUsers = await base44.entities.AppUser.filter(
+      const referredUsers = await backendClient.entities.AppUser.filter(
         { referredBy: appUser.id }
       );
 

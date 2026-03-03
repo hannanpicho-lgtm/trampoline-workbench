@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronDown, ChevronRight, Users, DollarSign, TrendingUp } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function ReferralTree({ userId }) {
   const [tree, setTree] = useState(null);
@@ -26,11 +26,11 @@ export default function ReferralTree({ userId }) {
   const buildTree = async (rootId, depth = 0, maxDepth = 3) => {
     if (depth >= maxDepth) return null;
 
-    const [user] = await base44.entities.AppUser.filter({ id: rootId });
+    const [user] = await backendClient.entities.AppUser.filter({ id: rootId });
     if (!user) return null;
 
-    const referrals = await base44.entities.AppUser.filter({ referredBy: rootId });
-    const earnings = await base44.entities.ReferralEarning.filter({ referrerId: rootId });
+    const referrals = await backendClient.entities.AppUser.filter({ referredBy: rootId });
+    const earnings = await backendClient.entities.ReferralEarning.filter({ referrerId: rootId });
     const totalEarned = earnings.reduce((sum, e) => sum + e.referralCommission, 0);
 
     const children = await Promise.all(

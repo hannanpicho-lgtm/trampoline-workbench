@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Activity, Loader2, Calendar, TrendingUp, Award, Zap } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function ActivityHistory({ appUser }) {
@@ -16,9 +16,9 @@ export default function ActivityHistory({ appUser }) {
     setLoading(true);
     try {
       const [logins, tasks, vipHistory] = await Promise.all([
-        base44.entities.LoginHistory?.filter?.({ userId: appUser?.id }, '-created_date', 50) || Promise.resolve([]),
-        base44.entities.UserTask?.filter?.({ userId: appUser?.id }, '-created_date', 50) || Promise.resolve([]),
-        base44.entities.VIPUpgradeRequest?.filter?.({ userId: appUser?.id }, '-created_date', 50) || Promise.resolve([])
+        backendClient.entities.LoginHistory?.filter?.({ userId: appUser?.id }, '-created_date', 50) || Promise.resolve([]),
+        backendClient.entities.UserTask?.filter?.({ userId: appUser?.id }, '-created_date', 50) || Promise.resolve([]),
+        backendClient.entities.VIPUpgradeRequest?.filter?.({ userId: appUser?.id }, '-created_date', 50) || Promise.resolve([])
       ]);
 
       const allActivities = [];
