@@ -1,20 +1,6 @@
 name: Deploy Training Accounts
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'functions/createTrainingAccount.ts'
-      - 'functions/processTrainingProfitShare.ts'
-      - 'functions/completeTaskWithValidation.ts'
-      - 'functions/_shared/base44Client.ts'
-      - 'src/components/profile/TrainingAccount*.jsx'
-      - 'src/components/admin/AdminTrainingAccounts*.jsx'
-      - 'src/api/backendClient.js'
-      - 'scripts/verify-decoupling.js'
-      - 'scripts/verify-deployment.js'
-      - 'package.json'
-      - '.github/workflows/deploy-training-accounts.yml'
   workflow_dispatch:
 
 env:

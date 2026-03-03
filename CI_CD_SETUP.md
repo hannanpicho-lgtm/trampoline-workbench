@@ -172,7 +172,7 @@ jobs:
 
 ### Deployment Workflow: `.github/workflows/deploy-training-accounts.yml`
 
-This workflow deploys to Base44 on push to main branch.
+This workflow deploys to Base44 via manual trigger (`workflow_dispatch`) from the Actions tab.
 
 See the full workflow file in the next section.
 
