@@ -321,7 +321,6 @@ jobs:
         run: |
           set -o pipefail
           npm run lint 2>&1 | head -50
-        continue-on-error: true # advisory until baseline lint debt is cleaned
       
       - name: Run tests
         run: |

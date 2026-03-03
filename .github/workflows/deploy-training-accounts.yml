@@ -49,7 +49,6 @@ jobs:
         run: |
           set -o pipefail
           npm run lint 2>&1 | head -50
-        continue-on-error: true
       
       - name: Run unit tests
         run: |

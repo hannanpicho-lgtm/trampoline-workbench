@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . --quiet",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint . --quiet --ignore-pattern dist --ignore-pattern coverage",
+    "lint:fix": "eslint . --fix --ignore-pattern dist --ignore-pattern coverage",
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
     "test": "vitest run tests/trainingAccounts.test.js",
