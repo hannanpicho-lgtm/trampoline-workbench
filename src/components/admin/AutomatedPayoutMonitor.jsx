@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, CheckCircle, XCircle, Clock, TrendingUp, AlertTriangle, RefreshCw } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -85,7 +84,7 @@ export default function AutomatedPayoutMonitor() {
   const handleManualTrigger = async () => {
     setProcessing(true);
     try {
-      const result = await base44.functions.invoke('checkAutoWithdrawals', {});
+      const result = await backendClient.functions.invoke('checkAutoWithdrawals', {});
       toast.success('Auto-withdrawal check completed', {
         description: `Processed: ${result.data.summary.processed}, Failed: ${result.data.summary.failed}`
       });

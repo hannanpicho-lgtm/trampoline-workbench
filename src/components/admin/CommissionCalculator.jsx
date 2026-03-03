@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { Calculator, TrendingUp, Package, DollarSign, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ export default function CommissionCalculator() {
   const calculate = async () => {
     setCalculating(true);
     try {
-      const response = await base44.functions.invoke('intelligentProductSelector', {
+      const response = await backendClient.functions.invoke('intelligentProductSelector', {
         vipLevel,
         setNumber: parseInt(setNumber)
       });

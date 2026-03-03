@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { DollarSign, Search, CheckCircle, AlertCircle, Clock, TrendingUp, Eye } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
@@ -50,7 +49,7 @@ export default function CommissionPayoutManager() {
   const handlePayoutAction = async (payoutId, action, reason = null) => {
     setProcessing(payoutId);
     try {
-      const response = await base44.functions.invoke('processCommissionPayout', {
+      const response = await backendClient.functions.invoke('processCommissionPayout', {
         payoutId,
         action,
         reason

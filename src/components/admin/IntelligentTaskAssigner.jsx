@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { Loader2, Zap, Users, CheckCircle, AlertCircle } from "lucide-react";
 
@@ -12,7 +12,7 @@ export default function IntelligentTaskAssigner() {
     setLoading(true);
     setResults(null);
     try {
-      const response = await base44.functions.invoke('intelligentTaskAssignment', {
+      const response = await backendClient.functions.invoke('intelligentTaskAssignment', {
         mode: 'auto'
       });
 

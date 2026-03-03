@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { backendClient } from "@/api/backendClient";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { Sparkles, Loader2, Zap } from "lucide-react";
 
@@ -33,7 +32,7 @@ export default function AITaskGenerator() {
   const generateTasks = async () => {
     setGenerating(true);
     try {
-      const response = await base44.functions.invoke("aiTaskGenerator", {
+      const response = await backendClient.functions.invoke("aiTaskGenerator", {
         vipLevel,
         taskCount,
         marketTrends,
