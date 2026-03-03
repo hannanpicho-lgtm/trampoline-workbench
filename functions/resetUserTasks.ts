@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+import { getBase44Client } from './_shared/base44Client.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -6,7 +6,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Method not allowed' }, { status: 405 });
     }
 
-    const base44 = createClientFromRequest(req);
+    const base44 = getBase44Client(req);
     const user = await base44.auth.me();
 
     if (user?.role !== 'admin') {

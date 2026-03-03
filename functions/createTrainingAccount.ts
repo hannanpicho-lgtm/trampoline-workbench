@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { getBase44Client } from './_shared/base44Client.ts';
 
 /**
  * Creates a training account linked to a referrer's invitation code.
@@ -13,7 +13,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
  */
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
+    const base44 = getBase44Client(req);
     const { phone, inviteCode, accountName } = await req.json();
 
     // Validate inputs
