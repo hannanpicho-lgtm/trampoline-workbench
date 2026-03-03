@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Sparkles, DollarSign, Gift } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function LotteryPage({ currentUser, onNavigate }) {
   const [spinning, setSpinning] = useState(false);
@@ -38,12 +38,12 @@ export default function LotteryPage({ currentUser, onNavigate }) {
       const prize = prizes[prizeIndex];
       
       try {
-        const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+        const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
         if (appUserData.length > 0) {
           const newBalance = (appUserData[0].balance || 0) + prize.value;
-          await base44.entities.AppUser.update(appUserData[0].id, { balance: newBalance });
+          await backendClient.entities.AppUser.update(appUserData[0].id, { balance: newBalance });
 
-          await base44.entities.Transaction.create({
+          await backendClient.entities.Transaction.create({
             userId: appUserData[0].id,
             type: "bonus",
             amount: prize.value,

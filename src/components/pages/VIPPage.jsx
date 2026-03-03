@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, Crown, CheckCircle, Lock, TrendingUp, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 const vipLevels = [
   {
@@ -138,8 +139,8 @@ export default function VIPPage({ currentUser, onNavigate }) {
     setLoading(true);
     try {
       const [appUserData, rules] = await Promise.all([
-        base44.entities.AppUser.filter({ created_by: currentUser.email }),
-        base44.entities.VIPUpgradeRule.filter({ isActive: true })
+        backendClient.entities.AppUser.filter({ created_by: currentUser.email }),
+        backendClient.entities.VIPUpgradeRule.filter({ isActive: true })
       ]);
 
       if (appUserData.length > 0) {
@@ -215,7 +216,7 @@ export default function VIPPage({ currentUser, onNavigate }) {
           description: `You are now ${selectedUpgrade.level}!`
         });
       } else {
-        await base44.entities.VIPUpgradeRequest.create({
+        await backendClient.entities.VIPUpgradeRequest.create({
           userId: appUser.id,
           currentLevel: appUser.vipLevel,
           requestedLevel: selectedUpgrade.level,

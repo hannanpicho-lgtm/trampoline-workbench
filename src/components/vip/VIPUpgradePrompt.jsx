@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { Crown, TrendingUp, CheckCircle, X, Sparkles } from "lucide-react";
 
@@ -26,7 +27,7 @@ export default function VIPUpgradePrompt({ currentUser, appUser, onUpgradeReques
   const checkAvailableUpgrades = async () => {
     setLoading(true);
     try {
-      const rules = await base44.entities.VIPUpgradeRule.filter({
+      const rules = await backendClient.entities.VIPUpgradeRule.filter({
         fromLevel: appUser.vipLevel,
         isActive: true
       });
@@ -56,7 +57,7 @@ export default function VIPUpgradePrompt({ currentUser, appUser, onUpgradeReques
   const handleRequestUpgrade = async (rule) => {
     try {
       // Check if already pending request
-      const existingRequests = await base44.entities.VIPUpgradeRequest.filter({
+      const existingRequests = await backendClient.entities.VIPUpgradeRequest.filter({
         userId: appUser.id,
         status: "pending"
       });
@@ -79,7 +80,7 @@ export default function VIPUpgradePrompt({ currentUser, appUser, onUpgradeReques
         if (onUpgradeRequested) onUpgradeRequested();
       } else {
         // Create upgrade request
-        await base44.entities.VIPUpgradeRequest.create({
+        await backendClient.entities.VIPUpgradeRequest.create({
           userId: appUser.id,
           currentLevel: appUser.vipLevel,
           requestedLevel: rule.toLevel,

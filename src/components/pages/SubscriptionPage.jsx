@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Crown, Check, Loader2, Sparkles } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function SubscriptionPage({ currentUser, onNavigate }) {
@@ -18,8 +19,8 @@ export default function SubscriptionPage({ currentUser, onNavigate }) {
     setLoading(true);
     try {
       const [tiersData, subsData] = await Promise.all([
-        base44.entities.SubscriptionTier.filter({ isActive: true }, "displayOrder"),
-        base44.entities.UserSubscription.filter({ userId: currentUser.id, status: "active" })
+        backendClient.entities.SubscriptionTier.filter({ isActive: true }, "displayOrder"),
+        backendClient.entities.UserSubscription.filter({ userId: currentUser.id, status: "active" })
       ]);
 
       setTiers(tiersData);

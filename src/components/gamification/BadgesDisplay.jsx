@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Award, Lock } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function BadgesDisplay({ userId, compact = false }) {
   const [badges, setBadges] = useState([]);
@@ -15,8 +15,8 @@ export default function BadgesDisplay({ userId, compact = false }) {
   const loadBadges = async () => {
     try {
       const [allBadges, earned] = await Promise.all([
-        base44.entities.Badge.list(),
-        base44.entities.UserBadge.filter({ userId })
+        backendClient.entities.Badge.list(),
+        backendClient.entities.UserBadge.filter({ userId })
       ]);
       
       setBadges(allBadges);
