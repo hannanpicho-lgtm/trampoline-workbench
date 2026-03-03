@@ -13,7 +13,8 @@
     "test": "vitest run tests/trainingAccounts.test.js",
     "test:integration": "vitest run tests/integration/",
     "test:watch": "vitest watch",
-    "test:all": "npm run typecheck && npm run lint && npm run test && npm run test:integration"
+    "verify:decoupling": "node scripts/verify-decoupling.js",
+    "test:all": "npm run verify:decoupling && npm run typecheck && npm run lint && npm run test && npm run test:integration"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.3",
