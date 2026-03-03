@@ -36,9 +36,10 @@ Write-Output "Dispatching workflow..."
   -Base44ProjectId $Base44ProjectId `
   -Base44AppId $Base44AppId
 
-if ($LASTEXITCODE -ne 0) {
+${dispatchExitCode} = $LASTEXITCODE
+if (${dispatchExitCode} -ne 0) {
   Write-Error "Dispatch failed."
-  exit $LASTEXITCODE
+  exit ${dispatchExitCode}
 }
 
 Write-Output "Monitoring latest run..."
@@ -50,4 +51,9 @@ Write-Output "Monitoring latest run..."
   -PollSeconds $PollSeconds `
   -TimeoutMinutes $TimeoutMinutes
 
-exit $LASTEXITCODE
+${monitorExitCode} = $LASTEXITCODE
+if (${monitorExitCode} -ne 0) {
+  Write-Error "Workflow dispatched successfully, but the monitored run did not succeed."
+}
+
+exit ${monitorExitCode}
