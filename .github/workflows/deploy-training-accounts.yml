@@ -28,20 +28,9 @@ env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
-  paused:
-    name: Deployment Paused Notice
-    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.enable_deploy != 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Show pause message
-        run: |
-          echo "⏸️ Training-account deployment is paused by default."
-          echo "To run it later, trigger workflow_dispatch with enable_deploy=true."
-
   test:
     name: Pre-deployment Tests
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' || github.event.inputs.enable_deploy == 'true' }}
     
     steps:
       - name: Checkout code
