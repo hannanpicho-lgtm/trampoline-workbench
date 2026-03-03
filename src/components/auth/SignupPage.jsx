@@ -18,7 +18,10 @@ const generateInvitationCode = () => {
 export default function SignupPage({ 
   onNavigate, 
   onSignupComplete,
-  translations
+  translations,
+  darkMode,
+  setDarkMode,
+  setShowLanguageModal
 }) {
   const [formData, setFormData] = useState({
     username: "",
@@ -31,11 +34,11 @@ export default function SignupPage({
   
   const [showTransactionPassword, setShowTransactionPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState(/** @type {Record<string, string>} */ ({}));
   const [isLoading, setIsLoading] = useState(false);
 
   const validate = () => {
-    const newErrors = {};
+    const newErrors = /** @type {Record<string, string>} */ ({});
     if (!formData.username.trim()) newErrors.username = "Username is required";
     if (!formData.phone.trim()) newErrors.phone = "Phone is required";
     if (!formData.transactionPassword || formData.transactionPassword.length < 6) newErrors.transactionPassword = "Transaction password must be at least 6 characters";

@@ -5,10 +5,10 @@ export default function PersonalInfoSection({ user, appUser, onSave, isSaving })
   const [fullName, setFullName] = useState(user?.full_name || '');
   const [phone, setPhone] = useState(appUser?.phone || '');
   const [bio, setBio] = useState(appUser?.bio || '');
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState(/** @type {Record<string, string>} */ ({}));
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors = /** @type {Record<string, string>} */ ({});
     if (!fullName.trim()) newErrors.fullName = 'Full name is required';
     if (!phone.trim()) newErrors.phone = 'Phone number is required';
     setErrors(newErrors);

@@ -466,8 +466,11 @@ export default function Dashboard() {
                         alt={product.name} 
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">No Image</div>';
+                          const target = /** @type {HTMLImageElement} */ (e.target);
+                          target.style.display = 'none';
+                          if (target.parentElement) {
+                            target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">No Image</div>';
+                          }
                         }}
                       />
                     ) : (

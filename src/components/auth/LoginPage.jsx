@@ -5,17 +5,20 @@ import { toast } from "sonner";
 export default function LoginPage({ 
   onNavigate, 
   onLogin, 
-  translations 
+  translations,
+  darkMode,
+  setDarkMode,
+  setShowLanguageModal
 }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState(/** @type {Record<string, string>} */ ({}));
 
   const validate = () => {
-    const newErrors = {};
+    const newErrors = /** @type {Record<string, string>} */ ({});
     if (!username.trim()) newErrors.username = "Username is required";
     if (!password || password.length < 6) newErrors.password = "Password must be at least 6 characters";
     setErrors(newErrors);

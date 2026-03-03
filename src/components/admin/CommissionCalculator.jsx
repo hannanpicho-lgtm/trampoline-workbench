@@ -17,7 +17,7 @@ export default function CommissionCalculator() {
     try {
       const response = await backendClient.functions.invoke('intelligentProductSelector', {
         vipLevel,
-        setNumber: parseInt(setNumber)
+        setNumber
       });
 
       setResult(response.data);

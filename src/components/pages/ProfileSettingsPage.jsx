@@ -717,7 +717,7 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
             <h2 className="text-xs font-semibold text-gray-900">VIP Progress</h2>
           </div>
           {(() => {
-            const vipData = getVIPLevel(currentUser?.tasksCompleted || 0);
+            const vipData = /** @type {any} */ (getVIPLevel(currentUser?.tasksCompleted || 0));
             const currentTasks = currentUser?.tasksCompleted || 0;
             const progress = vipData.nextLevel ? (currentTasks / vipData.nextLevel) * 100 : 100;
             return (

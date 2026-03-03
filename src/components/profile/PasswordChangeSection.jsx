@@ -9,10 +9,10 @@ export default function PasswordChangeSection() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState(/** @type {Record<string, string>} */ ({}));
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors = /** @type {Record<string, string>} */ ({});
     if (!currentPassword) newErrors.currentPassword = 'Current password is required';
     if (!newPassword) newErrors.newPassword = 'New password is required';
     if (newPassword.length < 8) newErrors.newPassword = 'Password must be at least 8 characters';

@@ -1,7 +1,22 @@
 import { base44 } from '@/api/base44Client';
 
-const resolvedProvider = import.meta?.env?.VITE_BACKEND_PROVIDER || 'base44';
-const apiBaseUrl = (import.meta?.env?.VITE_API_BASE_URL || '').replace(/\/$/, '');
+/**
+ * @typedef {Object} EntityApi
+ * @property {(sort?: string, limit?: number) => Promise<any[]>} list
+ * @property {(criteria?: Record<string, any>, sort?: string, limit?: number) => Promise<any[]>} filter
+ * @property {(id: string) => Promise<any>} get
+ * @property {(callback: (event: any) => void) => (() => void)} subscribe
+ * @property {(payload: Record<string, any>) => Promise<any>} create
+ * @property {(payload: Record<string, any>[]) => Promise<any>} bulkCreate
+ * @property {(id: string, payload: Record<string, any>) => Promise<any>} update
+ * @property {(id: string) => Promise<any>} delete
+ */
+
+const importMeta = /** @type {any} */ (import.meta);
+const auth = /** @type {any} */ (base44.auth);
+
+const resolvedProvider = importMeta?.env?.VITE_BACKEND_PROVIDER || 'base44';
+const apiBaseUrl = (importMeta?.env?.VITE_API_BASE_URL || '').replace(/\/$/, '');
 
 const buildUrl = (path, query = {}) => {
 	if (!apiBaseUrl) {
@@ -17,7 +32,17 @@ const buildUrl = (path, query = {}) => {
 	return url.toString();
 };
 
-const restRequest = async (path, { method = 'GET', body, query } = {}) => {
+/**
+ * @typedef {{
+ *  method?: string;
+ *  body?: Record<string, any>;
+ *  query?: Record<string, any>;
+ * }} RestRequestOptions
+ */
+
+/** @param {string} path @param {RestRequestOptions} [options] */
+const restRequest = async (path, options = {}) => {
+	const { method = 'GET', body, query } = options;
 	const response = await fetch(buildUrl(path, query), {
 		method,
 		headers: {
@@ -145,7 +170,7 @@ const authApi = {
 			return restRequest('/api/auth/me');
 		}
 
-		return base44.auth.me();
+		return auth.me();
 	},
 
 	async updateMe(payload) {
@@ -156,7 +181,7 @@ const authApi = {
 			});
 		}
 
-		return base44.auth.updateMe(payload);
+		return auth.updateMe(payload);
 	},
 
 	async signInWithPassword(payload) {
@@ -167,7 +192,7 @@ const authApi = {
 			});
 		}
 
-		return base44.auth.signInWithPassword(payload);
+		return auth.signInWithPassword(payload);
 	},
 
 	logout(redirectPath) {
@@ -179,7 +204,7 @@ const authApi = {
 			return;
 		}
 
-		return redirectPath ? base44.auth.logout(redirectPath) : base44.auth.logout();
+		return redirectPath ? auth.logout(redirectPath) : auth.logout();
 	},
 
 	redirectToLogin(returnPath) {
@@ -191,7 +216,7 @@ const authApi = {
 			return;
 		}
 
-		return returnPath ? base44.auth.redirectToLogin(returnPath) : base44.auth.redirectToLogin();
+		return returnPath ? auth.redirectToLogin(returnPath) : auth.redirectToLogin();
 	}
 };
 
@@ -334,6 +359,7 @@ const createEntityApi = (entityName) => ({
 	}
 });
 
+/** @type {Record<string, EntityApi>} */
 const entitiesApi = new Proxy(
 	{},
 	{
@@ -348,6 +374,18 @@ const entitiesApi = new Proxy(
 
 export const backendProvider = resolvedProvider;
 
+/**
+ * @type {{
+ *   auth: any;
+ *   functions: any;
+ *   integrations: any;
+ *   entities: Record<string, EntityApi>;
+ *   trainingAccounts: any;
+ *   trainingLogs: any;
+ *   transactions: any;
+ *   raw: any;
+ * }}
+ */
 export const backendClient = {
 	auth: authApi,
 	functions: functionsApi,
