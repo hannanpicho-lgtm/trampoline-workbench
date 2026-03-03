@@ -88,8 +88,8 @@ Add the following secrets (values from Base44 Dashboard):
 
 | Secret Name | Value | Where to Find |
 |-------------|-------|---|
-| `BASE44_API_KEY` | Your Base44 API key | Base44 Dashboard → Settings → API Keys |
-| `BASE44_PROJECT_ID` | Your Base44 project ID | Base44 Dashboard → Project Settings |
+| `BASE44_API_KEY` | Your Base44 API key (or use `BASE44_MASTER_KEY` fallback) | Base44 Dashboard → Settings → API Keys |
+| `BASE44_PROJECT_ID` | Your Base44 project ID (or use `BASE44_APP_ID` fallback) | Base44 Dashboard → Project Settings |
 | `BASE44_SERVICE_ROLE_KEY` | Service role key for backend (optional for deploy workflow gate) | Base44 Dashboard → Settings → Secrets |
 | `BASE44_MASTER_KEY` | Master key for database operations | Base44 Dashboard → Settings → Advanced |
 

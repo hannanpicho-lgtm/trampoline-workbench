@@ -51,25 +51,49 @@ jobs:
     name: Validate Configuration
     runs-on: ubuntu-latest
     needs: test
+    outputs:
+      base44-api-key: ${{ steps.resolve.outputs.base44-api-key }}
+      base44-project-id: ${{ steps.resolve.outputs.base44-project-id }}
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: Verify Base44 credentials
+      - name: Resolve Base44 credentials
+        id: resolve
         run: |
-          if [ -z "${{ secrets.BASE44_API_KEY }}" ]; then
-            echo "❌ BASE44_API_KEY not configured"
+          API_KEY="${{ secrets.BASE44_API_KEY }}"
+          if [ -z "$API_KEY" ]; then
+            API_KEY="${{ secrets.BASE44_MASTER_KEY }}"
+            if [ -n "$API_KEY" ]; then
+              echo "⚠️ BASE44_API_KEY not set; falling back to BASE44_MASTER_KEY"
+            fi
+          fi
+
+          PROJECT_ID="${{ secrets.BASE44_PROJECT_ID }}"
+          if [ -z "$PROJECT_ID" ]; then
+            PROJECT_ID="${{ secrets.BASE44_APP_ID }}"
+            if [ -n "$PROJECT_ID" ]; then
+              echo "⚠️ BASE44_PROJECT_ID not set; falling back to BASE44_APP_ID"
+            fi
+          fi
+
+          if [ -z "$API_KEY" ]; then
+            echo "❌ No Base44 API credential found. Set BASE44_API_KEY or BASE44_MASTER_KEY."
             exit 1
           fi
-          if [ -z "${{ secrets.BASE44_PROJECT_ID }}" ]; then
-            echo "❌ BASE44_PROJECT_ID not configured"
+          if [ -z "$PROJECT_ID" ]; then
+            echo "❌ No Base44 project identifier found. Set BASE44_PROJECT_ID or BASE44_APP_ID."
             exit 1
           fi
+
           if [ -z "${{ secrets.BASE44_SERVICE_ROLE_KEY }}" ]; then
             echo "⚠️ BASE44_SERVICE_ROLE_KEY not configured (optional for this workflow)"
           fi
-          echo "✓ Required Base44 credentials configured"
+
+          echo "base44-api-key=$API_KEY" >> $GITHUB_OUTPUT
+          echo "base44-project-id=$PROJECT_ID" >> $GITHUB_OUTPUT
+          echo "✓ Required Base44 credentials resolved"
       
       - name: Validate function files exist
         run: |
@@ -111,12 +135,12 @@ jobs:
         run: npm install -g @base44/cli
 
       - name: Authenticate Base44 CLI
-        run: base44 login --api-key "${{ secrets.BASE44_API_KEY }}"
+        run: base44 login --api-key "${{ needs.validate.outputs.base44-api-key }}"
       
       - name: Create deployment status
         id: deployment
         run: |
-          DEPLOYMENT_URL="https://base44.io/project/${{ secrets.BASE44_PROJECT_ID }}"
+          DEPLOYMENT_URL="https://base44.io/project/${{ needs.validate.outputs.base44-project-id }}"
           echo "deployment-url=${DEPLOYMENT_URL}" >> $GITHUB_OUTPUT
           echo "🚀 Deploying to: ${DEPLOYMENT_URL}"
       
@@ -124,21 +148,21 @@ jobs:
         id: deploy-create
         run: |
           echo "📦 Deploying createTrainingAccount..."
-          base44 deploy functions/createTrainingAccount.ts --project "${{ secrets.BASE44_PROJECT_ID }}"
+          base44 deploy functions/createTrainingAccount.ts --project "${{ needs.validate.outputs.base44-project-id }}"
           echo "✓ createTrainingAccount deployed"
       
       - name: Deploy processTrainingProfitShare function
         id: deploy-share
         run: |
           echo "📦 Deploying processTrainingProfitShare..."
-          base44 deploy functions/processTrainingProfitShare.ts --project "${{ secrets.BASE44_PROJECT_ID }}"
+          base44 deploy functions/processTrainingProfitShare.ts --project "${{ needs.validate.outputs.base44-project-id }}"
           echo "✓ processTrainingProfitShare deployed"
       
       - name: Update completeTaskWithValidation function
         id: deploy-complete
         run: |
           echo "📦 Updating completeTaskWithValidation..."
-          base44 deploy functions/completeTaskWithValidation.ts --project "${{ secrets.BASE44_PROJECT_ID }}"
+          base44 deploy functions/completeTaskWithValidation.ts --project "${{ needs.validate.outputs.base44-project-id }}"
           echo "✓ completeTaskWithValidation deployed"
 
   verify:
@@ -164,12 +188,12 @@ jobs:
         run: npm install -g @base44/cli
 
       - name: Authenticate Base44 CLI
-        run: base44 login --api-key "${{ secrets.BASE44_API_KEY }}"
+        run: base44 login --api-key "${{ needs.validate.outputs.base44-api-key }}"
       
       - name: Verify function files
         run: |
           echo "Verifying deployed functions are present..."
-          base44 functions list --project "${{ secrets.BASE44_PROJECT_ID }}"
+          base44 functions list --project "${{ needs.validate.outputs.base44-project-id }}"
           echo "✓ Function listing completed"
       
       - name: Verify database entities
