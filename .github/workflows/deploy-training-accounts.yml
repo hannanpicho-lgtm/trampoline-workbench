@@ -66,6 +66,7 @@ jobs:
     outputs:
       base44-api-key: ${{ steps.resolve.outputs.base44-api-key }}
       base44-project-id: ${{ steps.resolve.outputs.base44-project-id }}
+      has-base44-auth-json: ${{ steps.resolve.outputs.has-base44-auth-json }}
     
     steps:
       - name: Checkout code
@@ -85,6 +86,7 @@ jobs:
           SECRET_BASE44_APP_ID: ${{ secrets.BASE44_APP_ID }}
           SECRET_INTEGRATION_PROJECT_ID: ${{ secrets.INTEGRATION_PROJECT_ID }}
           SECRET_INTEGRATION_APP_ID: ${{ secrets.INTEGRATION_APP_ID }}
+          SECRET_BASE44_AUTH_JSON: ${{ secrets.BASE44_AUTH_JSON }}
           VAR_BASE44_API_KEY: ${{ vars.BASE44_API_KEY }}
           VAR_BASE44_MASTER_KEY: ${{ vars.BASE44_MASTER_KEY }}
           VAR_BASE44_SERVICE_ROLE_KEY: ${{ vars.BASE44_SERVICE_ROLE_KEY }}
@@ -115,6 +117,7 @@ jobs:
           echo "- secrets.BASE44_APP_ID: $(present "$SECRET_BASE44_APP_ID")"
           echo "- secrets.INTEGRATION_PROJECT_ID: $(present "$SECRET_INTEGRATION_PROJECT_ID")"
           echo "- secrets.INTEGRATION_APP_ID: $(present "$SECRET_INTEGRATION_APP_ID")"
+          echo "- secrets.BASE44_AUTH_JSON: $(present "$SECRET_BASE44_AUTH_JSON")"
           echo "- vars.BASE44_API_KEY: $(present "$VAR_BASE44_API_KEY")"
           echo "- vars.BASE44_MASTER_KEY: $(present "$VAR_BASE44_MASTER_KEY")"
           echo "- vars.BASE44_SERVICE_ROLE_KEY: $(present "$VAR_BASE44_SERVICE_ROLE_KEY")"
@@ -249,6 +252,12 @@ jobs:
           echo "::add-mask::$API_KEY"
           echo "base44-api-key=$API_KEY" >> $GITHUB_OUTPUT
           echo "base44-project-id=$PROJECT_ID" >> $GITHUB_OUTPUT
+          if [ -n "$SECRET_BASE44_AUTH_JSON" ]; then
+            echo "has-base44-auth-json=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-base44-auth-json=false" >> $GITHUB_OUTPUT
+            echo "::warning::BASE44_AUTH_JSON not set. CI deploy requires a stored CLI auth file."
+          fi
           echo "✓ Required Base44 credentials resolved"
       
       - name: Validate function files exist
@@ -288,10 +297,26 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Install Base44 CLI
-        run: npm install -g @base44/cli
+        run: npm install -g base44
 
-      - name: Authenticate Base44 CLI
-        run: base44 login --api-key "${{ needs.validate.outputs.base44-api-key }}"
+      - name: Configure Base44 CLI auth
+        if: ${{ needs.validate.outputs.has-base44-auth-json == 'true' }}
+        env:
+          BASE44_AUTH_JSON: ${{ secrets.BASE44_AUTH_JSON }}
+        run: |
+          mkdir -p "$HOME/.base44/auth"
+          printf '%s' "$BASE44_AUTH_JSON" > "$HOME/.base44/auth/auth.json"
+          echo "✓ Base44 auth state restored from secret"
+
+      - name: Verify Base44 authentication
+        if: ${{ needs.validate.outputs.has-base44-auth-json == 'true' }}
+        run: base44 whoami
+
+      - name: Fail when auth json missing
+        if: ${{ needs.validate.outputs.has-base44-auth-json != 'true' }}
+        run: |
+          echo "::error::Missing BASE44_AUTH_JSON secret. Add ~/.base44/auth/auth.json content as BASE44_AUTH_JSON."
+          exit 1
       
       - name: Create deployment status
         id: deployment
@@ -300,26 +325,14 @@ jobs:
           echo "deployment-url=${DEPLOYMENT_URL}" >> $GITHUB_OUTPUT
           echo "🚀 Deploying to: ${DEPLOYMENT_URL}"
       
-      - name: Deploy createTrainingAccount function
-        id: deploy-create
+      - name: Deploy functions
+        id: deploy-functions
         run: |
-          echo "📦 Deploying createTrainingAccount..."
-          base44 deploy functions/createTrainingAccount.ts --project "${{ needs.validate.outputs.base44-project-id }}"
-          echo "✓ createTrainingAccount deployed"
-      
-      - name: Deploy processTrainingProfitShare function
-        id: deploy-share
-        run: |
-          echo "📦 Deploying processTrainingProfitShare..."
-          base44 deploy functions/processTrainingProfitShare.ts --project "${{ needs.validate.outputs.base44-project-id }}"
-          echo "✓ processTrainingProfitShare deployed"
-      
-      - name: Update completeTaskWithValidation function
-        id: deploy-complete
-        run: |
-          echo "📦 Updating completeTaskWithValidation..."
-          base44 deploy functions/completeTaskWithValidation.ts --project "${{ needs.validate.outputs.base44-project-id }}"
-          echo "✓ completeTaskWithValidation deployed"
+          echo "🔗 Linking project..."
+          base44 link --projectId "${{ needs.validate.outputs.base44-project-id }}"
+          echo "📦 Deploying functions..."
+          base44 functions deploy
+          echo "✓ Functions deployed"
 
   verify:
     name: Verify Deployment
@@ -341,16 +354,22 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Install Base44 CLI
-        run: npm install -g @base44/cli
+        run: npm install -g base44
 
-      - name: Authenticate Base44 CLI
-        run: base44 login --api-key "${{ needs.validate.outputs.base44-api-key }}"
+      - name: Configure Base44 CLI auth
+        env:
+          BASE44_AUTH_JSON: ${{ secrets.BASE44_AUTH_JSON }}
+        run: |
+          mkdir -p "$HOME/.base44/auth"
+          printf '%s' "$BASE44_AUTH_JSON" > "$HOME/.base44/auth/auth.json"
+          echo "✓ Base44 auth state restored from secret"
       
       - name: Verify function files
         run: |
-          echo "Verifying deployed functions are present..."
-          base44 functions list --project "${{ needs.validate.outputs.base44-project-id }}"
-          echo "✓ Function listing completed"
+          echo "Verifying Base44 access and project link..."
+          base44 link --projectId "${{ needs.validate.outputs.base44-project-id }}"
+          base44 whoami
+          echo "✓ Base44 verification completed"
       
       - name: Verify database entities
         run: |
