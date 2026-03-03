@@ -16,6 +16,11 @@ on:
       base44_app_id:
         description: 'Manual Base44 app ID override (optional)'
         required: false
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/deploy-training-accounts.yml'
 
 env:
   NODE_VERSION: '18.x'
@@ -25,7 +30,7 @@ env:
 jobs:
   paused:
     name: Deployment Paused Notice
-    if: ${{ github.event.inputs.enable_deploy != 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.enable_deploy != 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Show pause message
@@ -36,7 +41,7 @@ jobs:
   test:
     name: Pre-deployment Tests
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.enable_deploy == 'true' }}
+    if: ${{ github.event_name == 'push' || github.event.inputs.enable_deploy == 'true' }}
     
     steps:
       - name: Checkout code
