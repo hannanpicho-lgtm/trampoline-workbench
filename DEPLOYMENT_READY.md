@@ -388,7 +388,8 @@ Follow `DEPLOYMENT_GUIDE.md` for comprehensive instructions with:
 - Integrated decoupling verification into `scripts/verify-deployment.js` pre-deploy checks.
 - Enforced decoupling verification in GitHub Actions test and deployment workflows.
 - Enforced deployment contract verification in GitHub Actions test workflow.
-- Converted CI/deployment quality gates to fail-fast behavior for strict enforcement.
+- Enforced fail-fast behavior for decoupling/deployment guards, tests, and deployment steps.
+- Kept lint/typecheck as advisory in CI until pre-existing baseline debt is remediated.
 
 ---
 

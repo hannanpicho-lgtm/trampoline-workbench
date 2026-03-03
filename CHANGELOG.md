@@ -15,7 +15,8 @@
 - Updated `scripts/verify-deployment.js` to execute decoupling verification during pre-deployment validation.
 - Enforced decoupling verification in CI workflows (`.github/workflows/test.yml`, `.github/workflows/deploy-training-accounts.yml`).
 - Enforced deployment contract verification in CI test workflow (`.github/workflows/test.yml`).
-- Tightened CI/deploy behavior to fail-fast for core quality, test, and deployment steps.
+- Tightened CI/deploy behavior to fail-fast for guards, tests, and deployment steps.
+- Set lint/typecheck to advisory in CI temporarily due to known pre-existing baseline debt.
 - Standardized markdown metadata dates and refreshed deployment/verification documentation to March 3, 2026.
 
 ### Validation
@@ -36,3 +37,4 @@
 - `c7c6fcf` Make deployment function steps fail-fast in CI
 - `a04ae46` Update CI/CD guide for decoupling guard and strict gates
 - `00b1b45` Add deployment verification gate to CI
+- `5855b8d` Make lint and typecheck advisory while keeping strict deploy gates
