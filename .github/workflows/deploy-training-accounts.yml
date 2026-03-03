@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       enable_deploy:
-        description: 'Set to true to run training-account deployment (paused by default)'
+        description: 'Set to false to keep training-account deployment paused'
         required: false
-        default: 'false'
+        default: 'true'
       base44_api_key:
         description: 'Manual Base44 API key override (optional)'
         required: false
