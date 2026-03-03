@@ -32,6 +32,10 @@ Run the app: `npm run dev`
 
 Open [Base44.com](http://Base44.com) and click on Publish.
 
+**Release Notes**
+
+See [CHANGELOG.md](CHANGELOG.md) for migration and rollout history.
+
 **Docs & Support**
 
 Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
