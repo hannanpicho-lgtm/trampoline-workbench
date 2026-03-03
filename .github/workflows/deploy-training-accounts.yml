@@ -2,6 +2,16 @@ name: Deploy Training Accounts
 
 on:
   workflow_dispatch:
+    inputs:
+      base44_api_key:
+        description: 'Manual Base44 API key override (optional)'
+        required: false
+      base44_project_id:
+        description: 'Manual Base44 project ID override (optional)'
+        required: false
+      base44_app_id:
+        description: 'Manual Base44 app ID override (optional)'
+        required: false
 
 env:
   NODE_VERSION: '18.x'
@@ -64,6 +74,9 @@ jobs:
       - name: Resolve Base44 credentials
         id: resolve
         env:
+          INPUT_BASE44_API_KEY: ${{ github.event.inputs.base44_api_key }}
+          INPUT_BASE44_PROJECT_ID: ${{ github.event.inputs.base44_project_id }}
+          INPUT_BASE44_APP_ID: ${{ github.event.inputs.base44_app_id }}
           SECRET_BASE44_API_KEY: ${{ secrets.BASE44_API_KEY }}
           SECRET_BASE44_MASTER_KEY: ${{ secrets.BASE44_MASTER_KEY }}
           SECRET_BASE44_SERVICE_ROLE_KEY: ${{ secrets.BASE44_SERVICE_ROLE_KEY }}
@@ -91,6 +104,9 @@ jobs:
           }
 
           echo "Credential source visibility (safe diagnostics):"
+          echo "- inputs.base44_api_key: $(present "$INPUT_BASE44_API_KEY")"
+          echo "- inputs.base44_project_id: $(present "$INPUT_BASE44_PROJECT_ID")"
+          echo "- inputs.base44_app_id: $(present "$INPUT_BASE44_APP_ID")"
           echo "- secrets.BASE44_API_KEY: $(present "$SECRET_BASE44_API_KEY")"
           echo "- secrets.BASE44_MASTER_KEY: $(present "$SECRET_BASE44_MASTER_KEY")"
           echo "- secrets.BASE44_SERVICE_ROLE_KEY: $(present "$SECRET_BASE44_SERVICE_ROLE_KEY")"
@@ -109,7 +125,10 @@ jobs:
           echo "- vars.INTEGRATION_APP_ID: $(present "$VAR_INTEGRATION_APP_ID")"
           echo "- vars.VITE_BASE44_APP_ID: $(present "$VAR_VITE_BASE44_APP_ID")"
 
-          API_KEY="$SECRET_BASE44_API_KEY"
+          API_KEY="$INPUT_BASE44_API_KEY"
+          if [ -z "$API_KEY" ]; then
+            API_KEY="$SECRET_BASE44_API_KEY"
+          fi
           if [ -z "$API_KEY" ]; then
             API_KEY="$SECRET_BASE44_MASTER_KEY"
             if [ -n "$API_KEY" ]; then
@@ -153,7 +172,16 @@ jobs:
             fi
           fi
 
-          PROJECT_ID="$SECRET_BASE44_PROJECT_ID"
+          PROJECT_ID="$INPUT_BASE44_PROJECT_ID"
+          if [ -z "$PROJECT_ID" ]; then
+            PROJECT_ID="$INPUT_BASE44_APP_ID"
+            if [ -n "$PROJECT_ID" ]; then
+              echo "⚠️ Using input base44_app_id as project identifier"
+            fi
+          fi
+          if [ -z "$PROJECT_ID" ]; then
+            PROJECT_ID="$SECRET_BASE44_PROJECT_ID"
+          fi
           if [ -z "$PROJECT_ID" ]; then
             PROJECT_ID="$SECRET_BASE44_APP_ID"
             if [ -n "$PROJECT_ID" ]; then
@@ -218,6 +246,7 @@ jobs:
             echo "⚠️ BASE44_SERVICE_ROLE_KEY not configured (optional for this workflow)"
           fi
 
+          echo "::add-mask::$API_KEY"
           echo "base44-api-key=$API_KEY" >> $GITHUB_OUTPUT
           echo "base44-project-id=$PROJECT_ID" >> $GITHUB_OUTPUT
           echo "✓ Required Base44 credentials resolved"
@@ -353,9 +382,10 @@ jobs:
       - name: Slack notification
         if: ${{ env.SLACK_WEBHOOK_URL != '' }}
         uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
         with:
           status: ${{ steps.status.outputs.status }}
-          webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
           text: |
             ${{ steps.status.outputs.emoji }} ${{ steps.status.outputs.message }}
             Repository: ${{ github.repository }}
