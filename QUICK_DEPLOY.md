@@ -2,6 +2,12 @@
 
 **Deploy in 60 minutes** ⚡
 
+## Production URLs
+
+- Frontend: https://trampoline-workbench.com
+- Backend Functions Base: https://api.base44.io/<BASE44_PROJECT_ID>/functions
+- Example Endpoint: https://api.base44.io/<BASE44_PROJECT_ID>/functions/createTrainingAccount
+
 ---
 
 ## Prerequisites ✅

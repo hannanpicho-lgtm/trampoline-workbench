@@ -6,6 +6,12 @@
 
 All files created, tested, and verified. System is ready to deploy to Base44 production.
 
+## Production URLs
+
+- Frontend: https://trampoline-workbench.com
+- Backend Functions Base: https://api.base44.io/<BASE44_PROJECT_ID>/functions
+- Example Endpoint: https://api.base44.io/<BASE44_PROJECT_ID>/functions/createTrainingAccount
+
 ---
 
 ## What's Been Built
