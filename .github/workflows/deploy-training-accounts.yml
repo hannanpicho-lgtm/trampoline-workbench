@@ -72,6 +72,12 @@ jobs:
             fi
           fi
           if [ -z "$API_KEY" ]; then
+            API_KEY="${{ secrets.BASE44_SERVICE_ROLE_KEY }}"
+            if [ -n "$API_KEY" ]; then
+              echo "⚠️ BASE44_API_KEY not set; falling back to BASE44_SERVICE_ROLE_KEY"
+            fi
+          fi
+          if [ -z "$API_KEY" ]; then
             API_KEY="${{ vars.BASE44_API_KEY }}"
             if [ -n "$API_KEY" ]; then
               echo "⚠️ Using repository variable BASE44_API_KEY"
@@ -81,6 +87,12 @@ jobs:
             API_KEY="${{ vars.BASE44_MASTER_KEY }}"
             if [ -n "$API_KEY" ]; then
               echo "⚠️ Using repository variable BASE44_MASTER_KEY"
+            fi
+          fi
+          if [ -z "$API_KEY" ]; then
+            API_KEY="${{ vars.BASE44_SERVICE_ROLE_KEY }}"
+            if [ -n "$API_KEY" ]; then
+              echo "⚠️ Using repository variable BASE44_SERVICE_ROLE_KEY"
             fi
           fi
 
