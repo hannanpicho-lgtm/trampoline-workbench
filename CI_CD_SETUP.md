@@ -231,6 +231,9 @@ npm run test:integration
 # Decoupling guard
 npm run verify:decoupling
 
+# Deployment contract verification
+npm run verify:deployment
+
 # All together
 npm run test:all
 ```
@@ -247,6 +250,7 @@ Add these scripts to your `package.json`:
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "verify:decoupling": "node scripts/verify-decoupling.js",
+    "verify:deployment": "node scripts/verify-deployment.js",
     "test:all": "npm run verify:decoupling && npm run typecheck && npm run lint && npm test && npm run test:integration",
     "typecheck": "tsc -p ./jsconfig.json --noEmit",
     "lint": "eslint src functions --ext .js,.jsx,.ts,.tsx"
@@ -305,6 +309,9 @@ jobs:
 
       - name: Verify decoupling guard
         run: npm run verify:decoupling
+
+      - name: Verify deployment contract
+        run: npm run verify:deployment
       
       - name: Type check
         run: npm run typecheck

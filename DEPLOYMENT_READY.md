@@ -384,8 +384,10 @@ Follow `DEPLOYMENT_GUIDE.md` for comprehensive instructions with:
 
 - Added automated guard `scripts/verify-decoupling.js` to block direct Base44 usage regressions.
 - Added npm script `verify:decoupling` and included it in `test:all`.
+- Added npm script `verify:deployment` for full pre-deployment contract validation.
 - Integrated decoupling verification into `scripts/verify-deployment.js` pre-deploy checks.
 - Enforced decoupling verification in GitHub Actions test and deployment workflows.
+- Enforced deployment contract verification in GitHub Actions test workflow.
 - Converted CI/deployment quality gates to fail-fast behavior for strict enforcement.
 
 ---
