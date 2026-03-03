@@ -1,8 +1,8 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+import { getBase44Client } from './_shared/base44Client.ts';
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
+    const base44 = getBase44Client(req);
     const { userId, limit = 5 } = await req.json();
 
     // Get user data
