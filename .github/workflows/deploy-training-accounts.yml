@@ -134,7 +134,6 @@ jobs:
           echo "Function file: functions/createTrainingAccount.ts"
           echo "Project ID: ${{ secrets.BASE44_PROJECT_ID }}"
           echo "✓ createTrainingAccount file validated"
-        continue-on-error: true
       
       - name: Deploy processTrainingProfitShare function
         id: deploy-share
@@ -143,7 +142,6 @@ jobs:
           echo "Function file: functions/processTrainingProfitShare.ts"
           echo "Project ID: ${{ secrets.BASE44_PROJECT_ID }}"
           echo "✓ processTrainingProfitShare file validated"
-        continue-on-error: true
       
       - name: Update completeTaskWithValidation function
         id: deploy-complete
@@ -152,7 +150,6 @@ jobs:
           echo "Function file: functions/completeTaskWithValidation.ts"
           echo "Project ID: ${{ secrets.BASE44_PROJECT_ID }}"
           echo "✓ completeTaskWithValidation file validated"
-        continue-on-error: true
 
   verify:
     name: Verify Deployment
