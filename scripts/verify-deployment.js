@@ -8,6 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
@@ -88,6 +89,23 @@ checkFile('TESTING_GUIDE.md', 'Testing guide');
 console.log('\nChecking Environment...');
 checkFile('.env', 'Environment configuration');
 checkFileContent('package.json', 'test": "vitest', 'Test scripts in package.json');
+
+// Check decoupling guard
+console.log('\nChecking Decoupling Guard...');
+checkFile('scripts/verify-decoupling.js', 'Decoupling verification script');
+checkFileContent('package.json', 'verify:decoupling', 'Decoupling npm script configured');
+
+try {
+  execSync('node scripts/verify-decoupling.js', {
+    cwd: projectRoot,
+    stdio: 'pipe',
+    encoding: 'utf8'
+  });
+  checks.files.push('✅ Decoupling verification execution passed');
+} catch (error) {
+  const output = `${error?.stdout || ''}${error?.stderr || ''}`.trim();
+  checks.errors.push(`❌ Decoupling verification failed${output ? `: ${output}` : ''}`);
+}
 
 // Print results
 console.log('\n' + '='.repeat(60));
