@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Mail, Phone, MessageSquare, Plus, X, Check, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 
 export default function ContactMethodsEditor({ currentUser, appUser, onUpdate }) {
   const [methods, setMethods] = useState([
@@ -27,7 +27,7 @@ export default function ContactMethodsEditor({ currentUser, appUser, onUpdate })
     setSaving(true);
     try {
       const updatedMethods = [...methods, { type: newType, value: newMethod, preferred: false }];
-      await base44.entities.AppUser.update(appUser.id, { contactMethods: updatedMethods });
+      await backendClient.entities.AppUser.update(appUser.id, { contactMethods: updatedMethods });
       
       setMethods(updatedMethods);
       setNewMethod('');
@@ -44,7 +44,7 @@ export default function ContactMethodsEditor({ currentUser, appUser, onUpdate })
     setSaving(true);
     try {
       const updatedMethods = methods.filter((_, i) => i !== index);
-      await base44.entities.AppUser.update(appUser.id, { contactMethods: updatedMethods });
+      await backendClient.entities.AppUser.update(appUser.id, { contactMethods: updatedMethods });
       
       setMethods(updatedMethods);
       toast.success('Contact method removed');
@@ -63,7 +63,7 @@ export default function ContactMethodsEditor({ currentUser, appUser, onUpdate })
         ...m,
         preferred: i === index
       }));
-      await base44.entities.AppUser.update(appUser.id, { contactMethods: updatedMethods });
+      await backendClient.entities.AppUser.update(appUser.id, { contactMethods: updatedMethods });
       
       setMethods(updatedMethods);
       toast.success('Preferred contact method updated');

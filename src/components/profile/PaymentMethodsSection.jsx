@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Wallet, Plus, Trash2, CreditCard, Building2, Settings } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import AddWalletModal from '../modals/AddWalletModal';
@@ -20,7 +20,7 @@ export default function PaymentMethodsSection({ appUser }) {
   const loadWallets = async () => {
     setLoading(true);
     try {
-      const payoutMethods = await base44.entities.PayoutMethod.filter({ 
+      const payoutMethods = await backendClient.entities.PayoutMethod.filter({ 
         userId: appUser.id 
       });
       setWallets(payoutMethods.map(pm => ({
@@ -40,7 +40,7 @@ export default function PaymentMethodsSection({ appUser }) {
   const handleDeleteWallet = async (walletId) => {
     setDeleting(walletId);
     try {
-      await base44.entities.PayoutMethod.delete(walletId);
+      await backendClient.entities.PayoutMethod.delete(walletId);
       setWallets(prev => prev.filter(w => w.id !== walletId));
       toast.success('Payment method removed');
     } catch (error) {

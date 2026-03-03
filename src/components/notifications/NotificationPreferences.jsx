@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Loader2 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function NotificationPreferences({ currentUser, onNavigate }) {
@@ -16,12 +16,12 @@ export default function NotificationPreferences({ currentUser, onNavigate }) {
     if (!currentUser?.id) return;
 
     try {
-      const data = await base44.entities.NotificationPreference.filter({ userId: currentUser.id });
+      const data = await backendClient.entities.NotificationPreference.filter({ userId: currentUser.id });
       if (data.length > 0) {
         setPrefs(data[0]);
       } else {
         // Create default preferences
-        const defaultPrefs = await base44.entities.NotificationPreference.create({
+        const defaultPrefs = await backendClient.entities.NotificationPreference.create({
           userId: currentUser.id,
           emailNotifications: true,
           inAppNotifications: true,
@@ -48,7 +48,7 @@ export default function NotificationPreferences({ currentUser, onNavigate }) {
 
     setSaving(true);
     try {
-      await base44.entities.NotificationPreference.update(prefs.id, { [field]: !prefs[field] });
+      await backendClient.entities.NotificationPreference.update(prefs.id, { [field]: !prefs[field] });
       toast.success("Preferences updated!");
     } catch (error) {
       toast.error("Failed to update preferences");
@@ -64,7 +64,7 @@ export default function NotificationPreferences({ currentUser, onNavigate }) {
 
     setSaving(true);
     try {
-      await base44.entities.NotificationPreference.update(prefs.id, { [field]: value });
+      await backendClient.entities.NotificationPreference.update(prefs.id, { [field]: value });
       toast.success("Quiet hours updated!");
     } catch (error) {
       toast.error("Failed to update quiet hours");

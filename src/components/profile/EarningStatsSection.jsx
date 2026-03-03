@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, CheckCircle, Calendar } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function EarningStatsSection({ appUser }) {
@@ -15,7 +15,7 @@ export default function EarningStatsSection({ appUser }) {
   const loadTaskData = async () => {
     setLoading(true);
     try {
-      const userTasks = await base44.entities.UserTask.filter(
+      const userTasks = await backendClient.entities.UserTask.filter(
         { userId: appUser.id },
         '-created_date',
         100

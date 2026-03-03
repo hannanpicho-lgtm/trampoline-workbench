@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, Settings, Calendar, Zap, AlertCircle, CheckCircle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
@@ -26,7 +26,7 @@ export default function AutoWithdrawalSettings({ appUser }) {
   const loadSettings = async () => {
     setLoading(true);
     try {
-      const existingSettings = await base44.entities.AutoWithdrawalSettings.filter({
+      const existingSettings = await backendClient.entities.AutoWithdrawalSettings.filter({
         userId: appUser.id
       });
 
@@ -51,7 +51,7 @@ export default function AutoWithdrawalSettings({ appUser }) {
 
   const loadPayoutMethods = async () => {
     try {
-      const methods = await base44.entities.PayoutMethod.filter({
+      const methods = await backendClient.entities.PayoutMethod.filter({
         userId: appUser.id
       });
       setPayoutMethods(methods);
@@ -85,10 +85,10 @@ export default function AutoWithdrawalSettings({ appUser }) {
     setSaving(true);
     try {
       if (settings) {
-        await base44.entities.AutoWithdrawalSettings.update(settings.id, formData);
+        await backendClient.entities.AutoWithdrawalSettings.update(settings.id, formData);
         toast.success('Auto-withdrawal settings updated');
       } else {
-        await base44.entities.AutoWithdrawalSettings.create({
+        await backendClient.entities.AutoWithdrawalSettings.create({
           userId: appUser.id,
           ...formData
         });
