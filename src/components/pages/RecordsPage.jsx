@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Calendar, Lock, CheckCircle, Clock, ArrowDown, ArrowUp } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { getTasksPerSet } from "../shared/VIPTaskConfig";
 
 export default function RecordsPage({ currentUser, onNavigate }) {
@@ -18,7 +18,7 @@ export default function RecordsPage({ currentUser, onNavigate }) {
   const loadData = async () => {
     setLoading(true);
     try {
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       
       if (appUserData.length === 0) {
         setLoading(false);
@@ -28,9 +28,9 @@ export default function RecordsPage({ currentUser, onNavigate }) {
       setAppUser(appUserData[0]);
 
       const [tasksData, productsData, transactionsData] = await Promise.all([
-        base44.entities.UserTask.filter({ userId: appUserData[0].id }, "-created_date", 100),
-        base44.entities.Product.filter({ isActive: true }),
-        base44.entities.Transaction.filter({ userId: appUserData[0].id }, "-created_date", 100)
+        backendClient.entities.UserTask.filter({ userId: appUserData[0].id }, "-created_date", 100),
+        backendClient.entities.Product.filter({ isActive: true }),
+        backendClient.entities.Transaction.filter({ userId: appUserData[0].id }, "-created_date", 100)
       ]);
 
       setTasks(tasksData);

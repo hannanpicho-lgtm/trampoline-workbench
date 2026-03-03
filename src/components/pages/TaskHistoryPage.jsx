@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, CheckCircle, Clock, XCircle, Crown, Filter, TrendingUp, DollarSign, Award, Star, MessageSquare } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 
 export default function TaskHistoryPage({ currentUser, onNavigate }) {
@@ -23,11 +23,11 @@ export default function TaskHistoryPage({ currentUser, onNavigate }) {
   const loadData = async () => {
     setLoading(true);
     try {
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       if (appUserData.length > 0) {
         const [tasksData, productsData] = await Promise.all([
-          base44.entities.UserTask.filter({ userId: appUserData[0].id }),
-          base44.entities.Product.list()
+          backendClient.entities.UserTask.filter({ userId: appUserData[0].id }),
+          backendClient.entities.Product.list()
         ]);
 
         setAppUser(appUserData[0]);
@@ -125,7 +125,7 @@ export default function TaskHistoryPage({ currentUser, onNavigate }) {
 
     setSubmittingRating(true);
     try {
-      await base44.entities.UserTask.update(ratingTask.id, {
+      await backendClient.entities.UserTask.update(ratingTask.id, {
         rating,
         ratingFeedback: feedback,
         ratedAt: new Date().toISOString()

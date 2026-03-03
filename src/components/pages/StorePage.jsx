@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ShoppingBag, Loader2, Sparkles, Tag } from "lucide-react";
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
@@ -16,7 +17,7 @@ export default function StorePage({ currentUser, onNavigate }) {
   const loadItems = async () => {
     setLoading(true);
     try {
-      const data = await base44.entities.InAppPurchase.filter({ isActive: true }, "displayOrder");
+      const data = await backendClient.entities.InAppPurchase.filter({ isActive: true }, "displayOrder");
       setItems(data);
     } catch (error) {
       toast.error("Failed to load store items");

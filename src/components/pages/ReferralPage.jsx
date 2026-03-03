@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Copy, Users, DollarSign, Gift, Share2, TrendingUp, Award, Mail, MessageCircle, Facebook, Twitter, Linkedin, Network } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import ReferralTree from "../referral/ReferralTree";
 
 export default function ReferralPage({ currentUser, onNavigate }) {
@@ -19,15 +19,15 @@ export default function ReferralPage({ currentUser, onNavigate }) {
   const loadReferralData = async () => {
     setLoading(true);
     try {
-      const [appUserData] = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const [appUserData] = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       setAppUser(appUserData);
 
       // Get referred users
-      const referredUsers = await base44.entities.AppUser.filter({ referredBy: appUserData.id });
+      const referredUsers = await backendClient.entities.AppUser.filter({ referredBy: appUserData.id });
       setReferrals(referredUsers);
 
       // Get referral commission earnings (20% from referred users' tasks)
-      const earningsData = await base44.entities.ReferralEarning.filter({ referrerId: appUserData.id });
+      const earningsData = await backendClient.entities.ReferralEarning.filter({ referrerId: appUserData.id });
       setEarnings(earningsData);
       setTotalCommissionEarned(earningsData.reduce((sum, e) => sum + e.referralCommission, 0));
     } catch (error) {

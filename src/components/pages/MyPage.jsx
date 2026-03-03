@@ -8,7 +8,7 @@ import StreakTracker from "../gamification/StreakTracker";
 import PayoutHistory from "./PayoutHistory";
 import PersonalizedDashboard from "../personalization/PersonalizedDashboard";
 import VIPUpgradePrompt from "../vip/VIPUpgradePrompt";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function MyPage({ 
   currentUser, 
@@ -33,10 +33,10 @@ export default function MyPage({
 
   const loadTransactions = async () => {
     try {
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       if (appUserData.length > 0) {
         setAppUser(appUserData[0]);
-        const txData = await base44.entities.Transaction.filter(
+        const txData = await backendClient.entities.Transaction.filter(
           { userId: appUserData[0].id },
           "-created_date",
           5
