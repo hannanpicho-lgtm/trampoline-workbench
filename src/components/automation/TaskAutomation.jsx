@@ -1,10 +1,10 @@
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { checkReferralMilestones } from "./ReferralRewards";
 
 // Calculate user's success rate and performance
 export async function calculateUserPerformance(userId) {
   try {
-    const tasks = await base44.entities.UserTask.filter({ userId });
+    const tasks = await backendClient.entities.UserTask.filter({ userId });
     const completed = tasks.filter(t => t.status === "completed" || t.status === "approved").length;
     const rejected = tasks.filter(t => t.status === "rejected").length;
     const total = tasks.length;
@@ -41,7 +41,7 @@ function calculateAvgTime(tasks) {
 // Automatically assign initial tasks with dynamic difficulty
 export async function assignInitialTasks(userId, vipLevel = "Bronze", performanceData = null) {
   try {
-    const products = await base44.entities.Product.filter({ isActive: true });
+    const products = await backendClient.entities.Product.filter({ isActive: true });
     
     // Get user performance if not provided
     const performance = performanceData || await calculateUserPerformance(userId);
@@ -82,7 +82,7 @@ export async function assignInitialTasks(userId, vipLevel = "Bronze", performanc
       vipLevel: vipLevel
     }));
 
-    await base44.entities.TaskOffer.bulkCreate(offers);
+    await backendClient.entities.TaskOffer.bulkCreate(offers);
     return offers.length;
   } catch (error) {
     console.error("Failed to assign initial tasks:", error);
@@ -138,10 +138,10 @@ export function getVIPCommissionBonus(vipLevel) {
 // Automatically process task completion rewards
 export async function processTaskCompletion(taskId, userId) {
   try {
-    const task = await base44.entities.UserTask.filter({ id: taskId });
+    const task = await backendClient.entities.UserTask.filter({ id: taskId });
     if (!task[0]) return null;
 
-    const appUserData = await base44.entities.AppUser.filter({ id: userId });
+    const appUserData = await backendClient.entities.AppUser.filter({ id: userId });
     if (!appUserData[0]) return null;
 
     const appUser = appUserData[0];
@@ -170,7 +170,7 @@ export async function processTaskCompletion(taskId, userId) {
     const streakData = await updateStreak(userId, appUser);
 
     // Update user
-    await base44.entities.AppUser.update(userId, {
+    await backendClient.entities.AppUser.update(userId, {
       tasksCompleted: newTasksCompleted,
       tasksInCurrentSet: newTasksInSet,
       balance: newBalance,
@@ -181,20 +181,20 @@ export async function processTaskCompletion(taskId, userId) {
     });
 
     // Check and award badges
-    const updatedUser = await base44.entities.AppUser.filter({ id: userId });
+    const updatedUser = await backendClient.entities.AppUser.filter({ id: userId });
     const newBadges = await checkAndAwardBadges(userId, updatedUser[0]);
 
     // Check referral milestones
     await checkReferralMilestones(userId);
 
     // Update task to approved
-    await base44.entities.UserTask.update(taskId, {
+    await backendClient.entities.UserTask.update(taskId, {
       status: "approved",
       approvedAt: new Date().toISOString()
     });
 
     // Create transaction record
-    await base44.entities.Transaction.create({
+    await backendClient.entities.Transaction.create({
       userId,
       type: "bonus",
       amount: task[0].commission,
@@ -236,7 +236,7 @@ export async function generateAdvancedTasks(userId, vipLevel) {
   if (!["Gold", "Platinum", "Diamond"].includes(vipLevel)) return;
 
   try {
-    const products = await base44.entities.Product.filter({ isActive: true });
+    const products = await backendClient.entities.Product.filter({ isActive: true });
     const advancedProducts = products.filter(p => p.price >= 100);
 
     if (advancedProducts.length === 0) return;
@@ -257,7 +257,7 @@ export async function generateAdvancedTasks(userId, vipLevel) {
       vipLevel: vipLevel
     }));
 
-    await base44.entities.TaskOffer.bulkCreate(offers);
+    await backendClient.entities.TaskOffer.bulkCreate(offers);
   } catch (error) {
     console.error("Failed to generate advanced tasks:", error);
   }
@@ -266,13 +266,13 @@ export async function generateAdvancedTasks(userId, vipLevel) {
 // Create special event tasks
 export async function createSpecialEventTasks() {
   try {
-    const products = await base44.entities.Product.filter({ isActive: true });
+    const products = await backendClient.entities.Product.filter({ isActive: true });
     const highValueProducts = products.filter(p => p.price >= 500).sort((a, b) => b.price - a.price).slice(0, 3);
     
     if (highValueProducts.length === 0) return;
     
     // Create special event task offers for all active users
-    const users = await base44.entities.AppUser.filter({ vipLevel: ["Gold", "Platinum", "Diamond"] });
+    const users = await backendClient.entities.AppUser.filter({ vipLevel: ["Gold", "Platinum", "Diamond"] });
     
     const eventOffers = [];
     for (const user of users) {
@@ -289,7 +289,7 @@ export async function createSpecialEventTasks() {
     }
     
     if (eventOffers.length > 0) {
-      await base44.entities.TaskOffer.bulkCreate(eventOffers);
+      await backendClient.entities.TaskOffer.bulkCreate(eventOffers);
     }
     
     return eventOffers.length;
@@ -303,7 +303,7 @@ export async function createSpecialEventTasks() {
 export async function refreshUserTasks(userId, vipLevel) {
   try {
     // Get current AppUser to check refresh count
-    const appUserData = await base44.entities.AppUser.filter({ id: userId });
+    const appUserData = await backendClient.entities.AppUser.filter({ id: userId });
     if (!appUserData[0]) return { success: false, message: "User not found" };
     
     const user = appUserData[0];
@@ -319,9 +319,9 @@ export async function refreshUserTasks(userId, vipLevel) {
     }
     
     // Expire old pending offers
-    const oldOffers = await base44.entities.TaskOffer.filter({ userId, status: "pending" });
+    const oldOffers = await backendClient.entities.TaskOffer.filter({ userId, status: "pending" });
     for (const offer of oldOffers) {
-      await base44.entities.TaskOffer.update(offer.id, { status: "expired" });
+      await backendClient.entities.TaskOffer.update(offer.id, { status: "expired" });
     }
     
     // Get performance data
@@ -331,7 +331,7 @@ export async function refreshUserTasks(userId, vipLevel) {
     const tasksAssigned = await assignInitialTasks(userId, vipLevel, performance);
     
     // Update refresh count
-    await base44.entities.AppUser.update(userId, {
+    await backendClient.entities.AppUser.update(userId, {
       dailyRefreshCount: refreshCount + 1,
       lastRefreshDate: new Date().toISOString()
     });
@@ -351,8 +351,8 @@ export async function refreshUserTasks(userId, vipLevel) {
 // Award badges based on milestones
 export async function checkAndAwardBadges(userId, appUser) {
   try {
-    const badges = await base44.entities.Badge.list();
-    const userBadges = await base44.entities.UserBadge.filter({ userId });
+    const badges = await backendClient.entities.Badge.list();
+    const userBadges = await backendClient.entities.UserBadge.filter({ userId });
     const earnedBadgeIds = userBadges.map(ub => ub.badgeId);
     
     const newBadges = [];
@@ -380,7 +380,7 @@ export async function checkAndAwardBadges(userId, appUser) {
       }
       
       if (shouldAward) {
-        await base44.entities.UserBadge.create({
+        await backendClient.entities.UserBadge.create({
           userId,
           badgeId: badge.id,
           earnedAt: new Date().toISOString()
@@ -388,7 +388,7 @@ export async function checkAndAwardBadges(userId, appUser) {
         
         // Award points for badge
         if (badge.points > 0) {
-          await base44.entities.AppUser.update(userId, {
+          await backendClient.entities.AppUser.update(userId, {
             points: (appUser.points || 0) + badge.points
           });
         }
@@ -431,7 +431,7 @@ export async function updateStreak(userId, appUser) {
     // Calculate streak bonus (points)
     const streakBonus = Math.min(newStreak * 10, 300); // Max 300 points
     
-    await base44.entities.AppUser.update(userId, {
+    await backendClient.entities.AppUser.update(userId, {
       currentStreak: newStreak,
       longestStreak,
       lastTaskDate: today,
@@ -454,13 +454,13 @@ export async function processLuckyBonus(userId, taskPrice) {
   if (Math.random() > 0.5) return null;
 
   try {
-    const appUser = await base44.entities.AppUser.filter({ id: userId });
+    const appUser = await backendClient.entities.AppUser.filter({ id: userId });
     if (!appUser[0]) return null;
 
     const user = appUser[0];
 
     // Check if user already received 3 bonuses in current set
-    const currentSetBonuses = await base44.entities.Transaction.filter({
+    const currentSetBonuses = await backendClient.entities.Transaction.filter({
       userId: userId,
       type: "bonus",
       metadata: { taskSetBonus: true }
@@ -488,7 +488,7 @@ export async function processLuckyBonus(userId, taskPrice) {
 
     // Create bonus transaction
     const newBalance = (user.balance || 0) + bonusAmount;
-    await base44.entities.Transaction.create({
+    await backendClient.entities.Transaction.create({
       userId: userId,
       type: "bonus",
       amount: bonusAmount,
@@ -499,7 +499,7 @@ export async function processLuckyBonus(userId, taskPrice) {
     });
 
     // Update user balance
-    await base44.entities.AppUser.update(userId, { balance: newBalance });
+    await backendClient.entities.AppUser.update(userId, { balance: newBalance });
 
     return bonusAmount;
   } catch (error) {

@@ -1,3 +1,4 @@
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
@@ -45,7 +46,7 @@ export async function enqueueTask({ userId, taskType, productId, secondProductId
   try {
     const priority = calculatePriority(taskType, vipLevel);
     
-    const queueItem = await base44.entities.TaskQueue.create({
+    const queueItem = await backendClient.entities.TaskQueue.create({
       userId,
       taskType,
       productId,
@@ -78,7 +79,7 @@ export async function enqueueTask({ userId, taskType, productId, secondProductId
  */
 async function getQueuePosition(queueId, priority) {
   try {
-    const queuedTasks = await base44.entities.TaskQueue.filter(
+    const queuedTasks = await backendClient.entities.TaskQueue.filter(
       { status: "queued" },
       "-priority"
     );
@@ -95,12 +96,12 @@ async function getQueuePosition(queueId, priority) {
  */
 export async function getUserQueueStatus(userId) {
   try {
-    const userTasks = await base44.entities.TaskQueue.filter(
+    const userTasks = await backendClient.entities.TaskQueue.filter(
       { userId, status: "queued" },
       "-priority"
     );
     
-    const processingTasks = await base44.entities.TaskQueue.filter(
+    const processingTasks = await backendClient.entities.TaskQueue.filter(
       { userId, status: "processing" }
     );
 
@@ -120,7 +121,7 @@ export async function getUserQueueStatus(userId) {
  */
 export async function cancelQueuedTask(queueId) {
   try {
-    const queueItem = await base44.entities.TaskQueue.filter({ id: queueId });
+    const queueItem = await backendClient.entities.TaskQueue.filter({ id: queueId });
     
     if (queueItem.length === 0) {
       throw new Error("Queue item not found");
@@ -130,7 +131,7 @@ export async function cancelQueuedTask(queueId) {
       throw new Error("Cannot cancel task that is currently processing");
     }
 
-    await base44.entities.TaskQueue.update(queueId, {
+    await backendClient.entities.TaskQueue.update(queueId, {
       status: "failed",
       errorMessage: "Cancelled by user"
     });
@@ -146,7 +147,7 @@ export async function cancelQueuedTask(queueId) {
  * Subscribe to queue updates for a user
  */
 export function subscribeToQueue(userId, callback) {
-  const unsubscribe = base44.entities.TaskQueue.subscribe((event) => {
+  const unsubscribe = backendClient.entities.TaskQueue.subscribe((event) => {
     if (event.data?.userId === userId) {
       callback(event);
     }
@@ -174,10 +175,10 @@ export async function triggerQueueProcessing() {
 export async function getQueueStatistics() {
   try {
     const [queued, processing, completed, failed] = await Promise.all([
-      base44.entities.TaskQueue.filter({ status: "queued" }),
-      base44.entities.TaskQueue.filter({ status: "processing" }),
-      base44.entities.TaskQueue.filter({ status: "completed" }),
-      base44.entities.TaskQueue.filter({ status: "failed" })
+      backendClient.entities.TaskQueue.filter({ status: "queued" }),
+      backendClient.entities.TaskQueue.filter({ status: "processing" }),
+      backendClient.entities.TaskQueue.filter({ status: "completed" }),
+      backendClient.entities.TaskQueue.filter({ status: "failed" })
     ]);
 
     return {

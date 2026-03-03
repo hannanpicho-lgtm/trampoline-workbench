@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, Lock, User, Phone as PhoneIcon, Ticket } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { processSignupBonus } from "../automation/ReferralRewards";
 
 const generateInvitationCode = () => {
@@ -52,7 +52,7 @@ export default function SignupPage({
     setIsLoading(true);
     try {
       // First check if it's an admin invitation code
-      const inviteCodes = await base44.entities.InvitationCode.filter({ 
+      const inviteCodes = await backendClient.entities.InvitationCode.filter({ 
         code: formData.inviteCode.toUpperCase() 
       });
 
@@ -74,7 +74,7 @@ export default function SignupPage({
 
         // Check if code has expired
         if (inviteCode.expiresAt && new Date(inviteCode.expiresAt) < new Date()) {
-          await base44.entities.InvitationCode.update(inviteCode.id, { status: 'expired' });
+          await backendClient.entities.InvitationCode.update(inviteCode.id, { status: 'expired' });
           toast.error("Invalid invitation code", { description: "This code has expired" });
           setIsLoading(false);
           return;
@@ -82,14 +82,14 @@ export default function SignupPage({
 
         // Check if code has reached max uses
         if (inviteCode.usedCount >= inviteCode.maxUses) {
-          await base44.entities.InvitationCode.update(inviteCode.id, { status: 'used' });
+          await backendClient.entities.InvitationCode.update(inviteCode.id, { status: 'used' });
           toast.error("Invalid invitation code", { description: "This code has reached its usage limit" });
           setIsLoading(false);
           return;
         }
       } else {
         // It's a user referral code
-        const referrers = await base44.entities.AppUser.filter({ 
+        const referrers = await backendClient.entities.AppUser.filter({ 
           invitationCode: formData.inviteCode 
         });
         
@@ -105,7 +105,7 @@ export default function SignupPage({
       const userInvitationCode = generateInvitationCode();
       
       // New user starts as VIP1 with $100 balance (minimum to submit VIP1 tasks)
-      const appUser = await base44.entities.AppUser.create({
+      const appUser = await backendClient.entities.AppUser.create({
         phone: formData.phone,
         invitationCode: userInvitationCode,
         referredBy: referrer?.id || null,
@@ -119,7 +119,7 @@ export default function SignupPage({
 
       if (isAdminCode) {
         // Update admin invitation code usage
-        await base44.entities.InvitationCode.update(inviteCode.id, {
+        await backendClient.entities.InvitationCode.update(inviteCode.id, {
           usedCount: inviteCode.usedCount + 1,
           usedBy: appUser.id,
           usedAt: new Date().toISOString(),
@@ -127,13 +127,13 @@ export default function SignupPage({
         });
       } else if (referrer) {
         // Update referrer's invite count
-        await base44.entities.AppUser.update(referrer.id, {
+        await backendClient.entities.AppUser.update(referrer.id, {
           inviteCount: (referrer.inviteCount || 0) + 1
         });
       }
 
       // Create new user bonus transaction
-      await base44.entities.Transaction.create({
+      await backendClient.entities.Transaction.create({
         userId: appUser.id,
         type: 'bonus',
         amount: 100,

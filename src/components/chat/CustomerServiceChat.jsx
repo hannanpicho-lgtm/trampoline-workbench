@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send, Loader2, Upload, Bot, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 
 export default function CustomerServiceChat({ currentUser, initialRequest = null, onNavigate = null, onClose = null, isModal = false }) {
@@ -26,7 +27,7 @@ export default function CustomerServiceChat({ currentUser, initialRequest = null
   useEffect(() => {
     if (!currentUser) return;
 
-    const unsubscribe = base44.entities.CustomerServiceChat.subscribe((event) => {
+    const unsubscribe = backendClient.entities.CustomerServiceChat.subscribe((event) => {
       if (event.type === "create" && event.data.userId === currentUser.id) {
         setMessages(prev => [...prev, event.data]);
         
@@ -42,10 +43,10 @@ export default function CustomerServiceChat({ currentUser, initialRequest = null
   const loadMessages = async () => {
     setLoading(true);
     try {
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       if (appUserData.length === 0) return;
 
-      const msgs = await base44.entities.CustomerServiceChat.filter(
+      const msgs = await backendClient.entities.CustomerServiceChat.filter(
         { userId: appUserData[0].id },
         "created_date",
         100
@@ -67,7 +68,7 @@ export default function CustomerServiceChat({ currentUser, initialRequest = null
     try {
       const welcomeMsg = "Welcome! 👋 How can we help you today?\n\n📌 Press 1 for Task Reset\n📌 Press 2 for Withdrawal\n📌 Press 3 for Deposit";
 
-      await base44.entities.CustomerServiceChat.create({
+      await backendClient.entities.CustomerServiceChat.create({
         userId: userId,
         message: welcomeMsg,
         isFromUser: false,
@@ -111,7 +112,7 @@ export default function CustomerServiceChat({ currentUser, initialRequest = null
 
     setSending(true);
     try {
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       if (appUserData.length === 0) {
         toast.error("User data not found");
         return;
@@ -131,7 +132,7 @@ export default function CustomerServiceChat({ currentUser, initialRequest = null
 
           if (aiResponse.data?.success) {
             // Save user message
-            await base44.entities.CustomerServiceChat.create({
+            await backendClient.entities.CustomerServiceChat.create({
               userId: appUserData[0].id,
               message: messageText,
               isFromUser: true,
@@ -149,7 +150,7 @@ export default function CustomerServiceChat({ currentUser, initialRequest = null
               responseText += "\n\n💡 Quick actions:\n" + aiResponse.data.suggestedActions.map(a => `• ${a}`).join('\n');
             }
 
-            await base44.entities.CustomerServiceChat.create({
+            await backendClient.entities.CustomerServiceChat.create({
               userId: appUserData[0].id,
               message: responseText,
               isFromUser: false,
@@ -172,7 +173,7 @@ export default function CustomerServiceChat({ currentUser, initialRequest = null
         fullMessage += "\n\n📎 Attachments:\n" + files.map(f => `${f.name}: ${f.url}`).join('\n');
       }
 
-      const chatMessage = await base44.entities.CustomerServiceChat.create({
+      const chatMessage = await backendClient.entities.CustomerServiceChat.create({
         userId: appUserData[0].id,
         message: fullMessage,
         isFromUser: true,
@@ -181,9 +182,9 @@ export default function CustomerServiceChat({ currentUser, initialRequest = null
 
       // Notify admins - create notification for all admin users
       try {
-        const adminUsers = await base44.entities.User.filter({ role: 'admin' });
+        const adminUsers = await backendClient.entities.User.filter({ role: 'admin' });
         for (const admin of adminUsers) {
-          await base44.entities.Notification.create({
+          await backendClient.entities.Notification.create({
             userId: admin.id,
             type: 'customer_message',
             title: '💬 New Customer Message',

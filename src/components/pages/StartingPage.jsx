@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, AlertCircle, Check, MessageCircle, X, Sparkles, Crown, History, Star, TrendingUp, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { backendClient } from "@/api/backendClient";
 import { base44 } from "@/api/base44Client";
 import { getTasksPerSet } from "../shared/VIPTaskConfig";
 import { canSubmitTask, getMinimumBalance } from "../tasks/vipRequirements";
@@ -40,7 +41,7 @@ export default function StartingPage({ currentUser, onNavigate }) {
   useEffect(() => {
     if (!appUser?.id) return;
 
-    const unsubscribe = base44.entities.UserTask.subscribe((event) => {
+    const unsubscribe = backendClient.entities.UserTask.subscribe((event) => {
       if (event.data?.userId === appUser.id) {
         loadData();
       }
@@ -53,20 +54,20 @@ export default function StartingPage({ currentUser, onNavigate }) {
     setLoading(true);
     try {
       // Fetch AppUser with retries for consistency after reset
-      let appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      let appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       
       // If no data found, retry once after short delay
       if (appUserData.length === 0) {
         await new Promise(resolve => setTimeout(resolve, 500));
-        appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+        appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       }
 
       if (appUserData.length > 0) {
         const [productsData, tasksData, categoriesData, prioritiesData] = await Promise.all([
-          base44.entities.Product.filter({ isActive: true }),
-          base44.entities.UserTask.filter({ userId: appUserData[0].id }, "-created_date", 100),
-          base44.entities.TaskCategory.filter({ isActive: true }),
-          base44.entities.TaskPriority.filter({ isActive: true })
+          backendClient.entities.Product.filter({ isActive: true }),
+          backendClient.entities.UserTask.filter({ userId: appUserData[0].id }, "-created_date", 100),
+          backendClient.entities.TaskCategory.filter({ isActive: true }),
+          backendClient.entities.TaskPriority.filter({ isActive: true })
         ]);
 
         console.log("Loaded data:", { 
@@ -97,7 +98,7 @@ export default function StartingPage({ currentUser, onNavigate }) {
     }
 
     try {
-      await base44.entities.UserTask.update(taskToRate.id, {
+      await backendClient.entities.UserTask.update(taskToRate.id, {
         rating,
         ratingFeedback,
         ratedAt: new Date().toISOString()
@@ -378,12 +379,12 @@ export default function StartingPage({ currentUser, onNavigate }) {
         );
 
         if (existingTask) {
-          await base44.entities.UserTask.update(existingTask.id, {
+          await backendClient.entities.UserTask.update(existingTask.id, {
             status: "completed",
             submittedAt: new Date().toISOString()
           });
         } else {
-          await base44.entities.UserTask.create({
+          await backendClient.entities.UserTask.create({
             userId: appUser.id,
             productId: product.id,
             commission: commission,
@@ -423,7 +424,7 @@ export default function StartingPage({ currentUser, onNavigate }) {
         const newBalance = currentBalanceValue - totalPremiumValue + (totalCommission - totalPremiumValue);
         const frozenBalance = totalPremiumValue + currentBalanceValue;
 
-        await base44.entities.AppUser.update(appUser.id, {
+        await backendClient.entities.AppUser.update(appUser.id, {
           balance: newBalance,
           frozenBalance: frozenBalance,
           isFrozen: true,
@@ -442,7 +443,7 @@ export default function StartingPage({ currentUser, onNavigate }) {
         setSelectedProducts([]);
         await loadData();
       } else {
-        await base44.entities.AppUser.update(appUser.id, {
+        await backendClient.entities.AppUser.update(appUser.id, {
           balance: (appUser.balance || 0) + totalCommission,
           tasksCompleted: (appUser.tasksCompleted || 0) + tasksToSubmit.length,
           tasksInCurrentSet: updatedTasksInSet,
