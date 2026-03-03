@@ -377,6 +377,13 @@ jobs:
             echo "⚠️ base44 link --projectId failed, retrying with short flag"
             if base44 link -p "$PRIMARY_ID"; then
               LINKED=true
+            else
+              echo "⚠️ base44 link -p failed, retrying with appId variants"
+              if base44 link --appId "$PRIMARY_ID"; then
+                LINKED=true
+              elif base44 link -a "$PRIMARY_ID"; then
+                LINKED=true
+              fi
             fi
           fi
 
@@ -385,6 +392,8 @@ jobs:
             if [ -n "$FALLBACK_APP_ID" ] && [ "$FALLBACK_APP_ID" != "$PRIMARY_ID" ]; then
               echo "⚠️ Primary project ID failed; retrying link with latest accessible Base44 app id: $FALLBACK_APP_ID"
               if base44 link --projectId "$FALLBACK_APP_ID"; then
+                LINKED=true
+              elif base44 link --appId "$FALLBACK_APP_ID"; then
                 LINKED=true
               fi
             fi
@@ -411,8 +420,29 @@ jobs:
           fi
 
           if [ "$DEPLOY_OK" != "true" ]; then
+            echo "🔁 Retrying with app id flag"
+            if base44 functions deploy --appId "$PRIMARY_ID"; then
+              DEPLOY_OK=true
+            fi
+          fi
+
+          if [ "$DEPLOY_OK" != "true" ]; then
             echo "🔁 Retrying with full deploy"
             if base44 deploy -y; then
+              DEPLOY_OK=true
+            fi
+          fi
+
+          if [ "$DEPLOY_OK" != "true" ]; then
+            echo "🔁 Retrying full deploy with project id flag"
+            if base44 deploy -y --projectId "$PRIMARY_ID"; then
+              DEPLOY_OK=true
+            fi
+          fi
+
+          if [ "$DEPLOY_OK" != "true" ]; then
+            echo "🔁 Retrying full deploy with app id flag"
+            if base44 deploy -y --appId "$PRIMARY_ID"; then
               DEPLOY_OK=true
             fi
           fi
