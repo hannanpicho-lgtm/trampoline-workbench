@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Trash2, Mail, Smartphone, Clock } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { useNotifications } from "./useNotifications";
 

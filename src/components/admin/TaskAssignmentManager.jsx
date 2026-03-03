@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Search, Plus, Trash2, AlertCircle, CheckCircle, Clock } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 

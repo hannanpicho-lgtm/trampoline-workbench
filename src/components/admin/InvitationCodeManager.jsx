@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Plus, Copy, CheckCircle, XCircle, Clock, Trash2, RefreshCw } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 

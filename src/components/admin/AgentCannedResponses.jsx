@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { MessageSquare, Plus, Edit2, Trash2, Copy } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
 const DEFAULT_RESPONSES = [
