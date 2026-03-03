@@ -391,15 +391,44 @@ jobs:
           fi
 
           if [ "$LINKED" != "true" ]; then
-            echo "::error::Failed to link Base44 project. Verify project/app identifier is correct."
-            exit 1
+            echo "⚠️ Failed to link explicitly; continuing with existing Base44 context"
           fi
 
           echo "📦 Deploying functions..."
-          if ! base44 functions deploy; then
-            echo "⚠️ base44 functions deploy failed, retrying with base44 deploy -y"
-            base44 deploy -y
+          DEPLOY_OK=false
+
+          if base44 functions deploy; then
+            DEPLOY_OK=true
+          else
+            echo "⚠️ base44 functions deploy failed"
           fi
+
+          if [ "$DEPLOY_OK" != "true" ]; then
+            echo "🔁 Retrying with project id flag"
+            if base44 functions deploy --projectId "$PRIMARY_ID"; then
+              DEPLOY_OK=true
+            fi
+          fi
+
+          if [ "$DEPLOY_OK" != "true" ]; then
+            echo "🔁 Retrying with full deploy"
+            if base44 deploy -y; then
+              DEPLOY_OK=true
+            fi
+          fi
+
+          if [ "$DEPLOY_OK" != "true" ]; then
+            echo "🔁 Retrying with alternate yes flag"
+            if base44 deploy --yes; then
+              DEPLOY_OK=true
+            fi
+          fi
+
+          if [ "$DEPLOY_OK" != "true" ]; then
+            echo "::error::All Base44 deploy command variants failed"
+            exit 1
+          fi
+
           echo "✓ Functions deployed"
 
   verify:
