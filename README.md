@@ -41,3 +41,31 @@ See [CHANGELOG.md](CHANGELOG.md) for migration and rollout history.
 Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
 
 Support: [https://app.base44.com/support](https://app.base44.com/support)
+
+**Deployment Workflow Helpers (PowerShell)**
+
+If the GitHub Actions **Run workflow** button is missing, use these scripts from `trampoline-workbench` root.
+
+1. Set token (needs `repo` + `workflow` scopes):
+
+```powershell
+$env:GITHUB_TOKEN="YOUR_PAT"
+```
+
+2. Dispatch only:
+
+```powershell
+.\scripts\trigger-deploy-workflow.ps1 -EnableDeploy "true"
+```
+
+3. Monitor latest run:
+
+```powershell
+.\scripts\monitor-deploy-workflow.ps1
+```
+
+4. One command (dispatch + monitor):
+
+```powershell
+.\scripts\run-deploy-workflow.ps1 -EnableDeploy "true"
+```
