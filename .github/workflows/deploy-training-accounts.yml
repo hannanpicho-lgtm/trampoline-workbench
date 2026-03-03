@@ -329,9 +329,15 @@ jobs:
         id: deploy-functions
         run: |
           echo "🔗 Linking project..."
-          base44 link --projectId "${{ needs.validate.outputs.base44-project-id }}"
+          if ! base44 link --projectId "${{ needs.validate.outputs.base44-project-id }}"; then
+            echo "⚠️ base44 link --projectId failed, retrying with short flag"
+            base44 link -p "${{ needs.validate.outputs.base44-project-id }}"
+          fi
           echo "📦 Deploying functions..."
-          base44 functions deploy
+          if ! base44 functions deploy; then
+            echo "⚠️ base44 functions deploy failed, retrying with base44 deploy -y"
+            base44 deploy -y
+          fi
           echo "✓ Functions deployed"
 
   verify:
