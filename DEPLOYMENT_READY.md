@@ -388,6 +388,7 @@ Follow `DEPLOYMENT_GUIDE.md` for comprehensive instructions with:
 **Detailed Guide**: [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)  
 **Verification**: [VERIFICATION_REPORT.md](VERIFICATION_REPORT.md)  
 **Checklist**: [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)  
+**Changelog**: [CHANGELOG.md](CHANGELOG.md)  
 
 ---
 
