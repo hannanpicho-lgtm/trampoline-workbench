@@ -86,6 +86,8 @@ On GitHub:
 
 Add the following secrets (values from Base44 Dashboard):
 
+If you store these as **Environment secrets** (for example under `production`), the deployment workflow jobs that validate/deploy must run in that same environment.
+
 | Secret Name | Value | Where to Find |
 |-------------|-------|---|
 | `BASE44_API_KEY` | Your Base44 API key (or use `BASE44_MASTER_KEY` fallback) | Base44 Dashboard → Settings → API Keys |

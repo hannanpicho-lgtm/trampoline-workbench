@@ -51,6 +51,8 @@ jobs:
     name: Validate Configuration
     runs-on: ubuntu-latest
     needs: test
+    environment:
+      name: production
     outputs:
       base44-api-key: ${{ steps.resolve.outputs.base44-api-key }}
       base44-project-id: ${{ steps.resolve.outputs.base44-project-id }}
