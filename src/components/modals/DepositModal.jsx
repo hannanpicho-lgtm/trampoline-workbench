@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function DepositModal({ show, onClose, currentUser, onSuccess }) {
   const [amount, setAmount] = useState("");
@@ -25,7 +25,7 @@ export default function DepositModal({ show, onClose, currentUser, onSuccess }) 
       const depositAmount = parseFloat(amount);
       
       // Get current user data
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       
       if (appUserData.length === 0) {
         toast.error("User data not found");
@@ -51,7 +51,7 @@ export default function DepositModal({ show, onClose, currentUser, onSuccess }) 
       const newBalance = (appUser.balance || 0) + totalAmount;
 
       // Create transaction record
-      await base44.entities.Transaction.create({
+      await backendClient.entities.Transaction.create({
         userId: appUser.id,
         type: "deposit",
         amount: depositAmount,
@@ -67,18 +67,18 @@ export default function DepositModal({ show, onClose, currentUser, onSuccess }) 
       });
 
       // Update user balance
-      await base44.entities.AppUser.update(appUser.id, {
+      await backendClient.entities.AppUser.update(appUser.id, {
         balance: newBalance
       });
 
       // Notify referrer about deposit
       if (appUser.referredBy) {
         try {
-          const [referrer] = await base44.entities.AppUser.filter({ id: appUser.referredBy });
+          const [referrer] = await backendClient.entities.AppUser.filter({ id: appUser.referredBy });
           if (referrer) {
-            const referrerUser = await base44.entities.User.filter({ email: referrer.created_by });
+            const referrerUser = await backendClient.entities.User.filter({ email: referrer.created_by });
             if (referrerUser.length > 0) {
-              await base44.entities.Notification.create({
+              await backendClient.entities.Notification.create({
                 userId: referrerUser[0].id,
                 type: 'referral_activity',
                 title: '💵 Referral Made a Deposit!',

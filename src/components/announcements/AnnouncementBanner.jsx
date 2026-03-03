@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, AlertCircle, Info, CheckCircle, AlertTriangle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 
 export default function AnnouncementBanner({ userId }) {
   const [announcements, setAnnouncements] = useState([]);
@@ -13,7 +13,7 @@ export default function AnnouncementBanner({ userId }) {
 
   const loadAnnouncements = async () => {
     try {
-      const userAnnouncements = await base44.entities.UserAnnouncement.filter({
+      const userAnnouncements = await backendClient.entities.UserAnnouncement.filter({
         userId,
         read: false,
         dismissed: false
@@ -23,7 +23,7 @@ export default function AnnouncementBanner({ userId }) {
       if (announcementIds.length === 0) return;
 
       const announcements = await Promise.all(
-        announcementIds.map(id => base44.entities.Announcement.filter({ id }))
+        announcementIds.map(id => backendClient.entities.Announcement.filter({ id }))
       );
 
       const validAnnouncements = announcements
@@ -42,13 +42,13 @@ export default function AnnouncementBanner({ userId }) {
 
   const handleDismiss = async (announcement) => {
     try {
-      const userAnnouncement = await base44.entities.UserAnnouncement.filter({
+      const userAnnouncement = await backendClient.entities.UserAnnouncement.filter({
         userId,
         announcementId: announcement.id
       });
 
       if (userAnnouncement.length > 0) {
-        await base44.entities.UserAnnouncement.update(userAnnouncement[0].id, {
+        await backendClient.entities.UserAnnouncement.update(userAnnouncement[0].id, {
           dismissed: true,
           read: true,
           readAt: new Date().toISOString()
@@ -67,18 +67,18 @@ export default function AnnouncementBanner({ userId }) {
 
   const handleRead = async (announcement) => {
     try {
-      const userAnnouncement = await base44.entities.UserAnnouncement.filter({
+      const userAnnouncement = await backendClient.entities.UserAnnouncement.filter({
         userId,
         announcementId: announcement.id
       });
 
       if (userAnnouncement.length > 0 && !userAnnouncement[0].read) {
-        await base44.entities.UserAnnouncement.update(userAnnouncement[0].id, {
+        await backendClient.entities.UserAnnouncement.update(userAnnouncement[0].id, {
           read: true,
           readAt: new Date().toISOString()
         });
 
-        await base44.entities.Announcement.update(announcement.id, {
+        await backendClient.entities.Announcement.update(announcement.id, {
           viewCount: (announcement.viewCount || 0) + 1
         });
       }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 
 export const useNotifications = (userId) => {
   const [notifications, setNotifications] = useState([]);
@@ -11,7 +11,7 @@ export const useNotifications = (userId) => {
     if (!userId) return;
     setLoading(true);
     try {
-      const data = await base44.entities.Notification.filter(
+      const data = await backendClient.entities.Notification.filter(
         { userId },
         "-created_date",
         50
@@ -31,7 +31,7 @@ export const useNotifications = (userId) => {
 
     loadNotifications();
 
-    const unsubscribe = base44.entities.Notification.subscribe((event) => {
+    const unsubscribe = backendClient.entities.Notification.subscribe((event) => {
       if (event.data.userId === userId) {
         if (event.type === 'create') {
           setNotifications(prev => [event.data, ...prev]);
@@ -55,7 +55,7 @@ export const useNotifications = (userId) => {
 
   const markAsRead = async (notificationId) => {
     try {
-      await base44.entities.Notification.update(notificationId, { read: true });
+      await backendClient.entities.Notification.update(notificationId, { read: true });
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
     }
@@ -68,7 +68,7 @@ export const useNotifications = (userId) => {
 
     try {
       await Promise.all(
-        unreadIds.map(id => base44.entities.Notification.update(id, { read: true }))
+        unreadIds.map(id => backendClient.entities.Notification.update(id, { read: true }))
       );
     } catch (error) {
       console.error('Failed to mark all as read:', error);
@@ -77,7 +77,7 @@ export const useNotifications = (userId) => {
 
   const deleteNotification = async (notificationId) => {
     try {
-      await base44.entities.Notification.delete(notificationId);
+      await backendClient.entities.Notification.delete(notificationId);
       setNotifications(prev => prev.filter(n => n.id !== notificationId));
     } catch (error) {
       console.error('Failed to delete notification:', error);

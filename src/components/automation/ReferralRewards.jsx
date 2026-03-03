@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 /**
  * Award referral bonus to the referrer
@@ -6,7 +6,7 @@ import { base44 } from "@/api/base44Client";
 export async function awardReferralBonus(referrerId, referredUserId, bonusType) {
   try {
     // Check if bonus already awarded
-    const existing = await base44.entities.ReferralBonus.filter({
+    const existing = await backendClient.entities.ReferralBonus.filter({
       referrerId,
       referredUserId,
       bonusType
@@ -27,7 +27,7 @@ export async function awardReferralBonus(referrerId, referredUserId, bonusType) 
     const amount = bonusAmounts[bonusType] || 0;
 
     // Create bonus record
-    await base44.entities.ReferralBonus.create({
+    await backendClient.entities.ReferralBonus.create({
       referrerId,
       referredUserId,
       bonusType,
@@ -36,14 +36,14 @@ export async function awardReferralBonus(referrerId, referredUserId, bonusType) 
     });
 
     // Update referrer's balance
-    const referrer = await base44.entities.AppUser.filter({ id: referrerId });
+    const referrer = await backendClient.entities.AppUser.filter({ id: referrerId });
     if (referrer.length > 0) {
-      await base44.entities.AppUser.update(referrerId, {
+      await backendClient.entities.AppUser.update(referrerId, {
         balance: (referrer[0].balance || 0) + amount
       });
 
       // Create transaction record
-      await base44.entities.Transaction.create({
+      await backendClient.entities.Transaction.create({
         userId: referrerId,
         type: "referral",
         amount,
@@ -75,7 +75,7 @@ export async function processSignupBonus(newUserId, referrerId) {
  */
 export async function checkReferralMilestones(userId) {
   try {
-    const user = await base44.entities.AppUser.filter({ id: userId });
+    const user = await backendClient.entities.AppUser.filter({ id: userId });
     if (user.length === 0 || !user[0].referredBy) return;
 
     const tasksCompleted = user[0].tasksCompleted || 0;
