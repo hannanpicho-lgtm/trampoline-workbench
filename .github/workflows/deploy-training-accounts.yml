@@ -233,6 +233,54 @@ jobs:
               echo "⚠️ Using repository variable VITE_BASE44_APP_ID"
             fi
           fi
+          if [ -z "$PROJECT_ID" ] && [ -n "$SECRET_BASE44_AUTH_JSON" ]; then
+            DISCOVERED_ID=$(python3 - <<'PY'
+import json, os, urllib.request
+
+raw = os.environ.get("SECRET_BASE44_AUTH_JSON", "")
+try:
+    token = json.loads(raw).get("accessToken", "")
+except Exception:
+    token = ""
+
+if not token:
+    print("")
+    raise SystemExit(0)
+
+req = urllib.request.Request(
+    "https://app.base44.com/api/apps",
+    headers={"Authorization": f"Bearer {token}"}
+)
+
+try:
+    with urllib.request.urlopen(req, timeout=20) as response:
+        data = json.loads(response.read().decode("utf-8"))
+except Exception:
+    print("")
+    raise SystemExit(0)
+
+apps = data if isinstance(data, list) else data.get("apps", [])
+if not isinstance(apps, list) or not apps:
+    print("")
+    raise SystemExit(0)
+
+target = None
+for app in apps:
+    if app.get("slug") == "trampoline-workbench":
+        target = app
+        break
+
+if target is None:
+    target = apps[0]
+
+print(target.get("id", ""))
+PY
+)
+            if [ -n "$DISCOVERED_ID" ]; then
+              PROJECT_ID="$DISCOVERED_ID"
+              echo "⚠️ Auto-discovered Base44 app id from authenticated account"
+            fi
+          fi
           if [ -z "$PROJECT_ID" ]; then
             README_APP_ID=$(awk -F= '/VITE_BASE44_APP_ID=/{print $2}' README.md | grep -v 'your_app_id' | tail -1 | tr -d '\r')
             if [ -n "$README_APP_ID" ]; then
