@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Search, Edit, RefreshCw, ChevronDown, Eye, Filter, X, Download, CheckSquare, Square, Trash2, Users as UsersIcon, ArrowUpDown } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import EditUserModal from "./EditUserModal";
@@ -101,7 +100,7 @@ export default function UserManagementList() {
     if (!confirm(`Reset tasks for user ${user.phone}?`)) return;
 
     try {
-      await base44.functions.invoke('resetUserTasks', {
+      await backendClient.functions.invoke('resetUserTasks', {
         userId: user.id,
         resetType: 'full'
       });
@@ -162,7 +161,7 @@ export default function UserManagementList() {
 
     try {
       for (const userId of selectedUsers) {
-        await base44.functions.invoke('resetUserTasks', {
+        await backendClient.functions.invoke('resetUserTasks', {
           userId,
           resetType: 'full'
         });
@@ -214,7 +213,7 @@ export default function UserManagementList() {
     if (!confirm('Send password reset email to this user?')) return;
 
     try {
-      await base44.functions.invoke('sendPasswordReset', { email: userEmail });
+      await backendClient.functions.invoke('sendPasswordReset', { email: userEmail });
       toast.success('Password reset email sent');
     } catch (error) {
       toast.error('Failed to send password reset email');

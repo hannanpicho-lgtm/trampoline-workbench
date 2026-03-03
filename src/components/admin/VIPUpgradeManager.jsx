@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { backendClient } from "@/api/backendClient";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { Crown, Plus, Edit, Trash2, CheckCircle, XCircle, TrendingUp } from "lucide-react";
 
@@ -82,7 +81,7 @@ export default function VIPUpgradeManager() {
 
   const handleApproveRequest = async (request) => {
     try {
-      await base44.functions.invoke("processVIPUpgrade", {
+      await backendClient.functions.invoke("processVIPUpgrade", {
         requestId: request.id,
         action: "approve"
       });
@@ -98,7 +97,7 @@ export default function VIPUpgradeManager() {
     if (!reason) return;
     
     try {
-      await base44.functions.invoke("processVIPUpgrade", {
+      await backendClient.functions.invoke("processVIPUpgrade", {
         requestId: request.id,
         action: "reject",
         reason
