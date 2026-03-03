@@ -352,6 +352,8 @@ jobs:
       - name: Deploy functions
         id: deploy-functions
         run: |
+          set +e
+
           if [ ! -f "config.jsonc" ] && [ ! -f "config.json" ] && [ ! -f "base44/config.jsonc" ] && [ ! -f "base44/config.json" ]; then
             echo "🧩 Creating minimal Base44 config at base44/config.jsonc"
             mkdir -p base44
@@ -388,7 +390,7 @@ jobs:
           fi
 
           if [ "$LINKED" != "true" ]; then
-            FALLBACK_APP_ID=$(node -e "const fs=require('fs');const https=require('https');const auth=JSON.parse(fs.readFileSync(process.env.HOME+'/.base44/auth/auth.json','utf8'));const opts={headers:{Authorization:'Bearer '+auth.accessToken}};https.get('https://app.base44.com/api/apps?sort=-updated_date&fields=id,name&limit=1',opts,res=>{let d='';res.on('data',c=>d+=c);res.on('end',()=>{try{const a=JSON.parse(d);console.log((Array.isArray(a)&&a[0]&&a[0].id)||'')}catch{console.log('')}})}).on('error',()=>console.log(''));")
+            FALLBACK_APP_ID=$(node -e "const fs=require('fs');const https=require('https');const auth=JSON.parse(fs.readFileSync(process.env.HOME+'/.base44/auth/auth.json','utf8'));const opts={headers:{Authorization:'Bearer '+auth.accessToken}};https.get('https://app.base44.com/api/apps?sort=-updated_date&fields=id,name&limit=1',opts,res=>{let d='';res.on('data',c=>d+=c);res.on('end',()=>{try{const a=JSON.parse(d);console.log((Array.isArray(a)&&a[0]&&a[0].id)||'')}catch{console.log('')}})}).on('error',()=>console.log(''));" 2>/dev/null || true)
             if [ -n "$FALLBACK_APP_ID" ] && [ "$FALLBACK_APP_ID" != "$PRIMARY_ID" ]; then
               echo "⚠️ Primary project ID failed; retrying link with latest accessible Base44 app id: $FALLBACK_APP_ID"
               if base44 link --projectId "$FALLBACK_APP_ID"; then
