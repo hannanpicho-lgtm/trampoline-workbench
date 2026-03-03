@@ -233,6 +233,13 @@ jobs:
               echo "⚠️ Using repository variable VITE_BASE44_APP_ID"
             fi
           fi
+          if [ -z "$PROJECT_ID" ]; then
+            README_APP_ID=$(awk -F= '/VITE_BASE44_APP_ID=/{print $2}' README.md | grep -v 'your_app_id' | tail -1 | tr -d '\r')
+            if [ -n "$README_APP_ID" ]; then
+              PROJECT_ID="$README_APP_ID"
+              echo "⚠️ Using README.md VITE_BASE44_APP_ID fallback"
+            fi
+          fi
 
           if [ -z "$API_KEY" ] && [ -z "$SECRET_BASE44_AUTH_JSON" ]; then
             echo "::error::Missing Base44 authentication. Provide BASE44_AUTH_JSON (preferred) or BASE44_API_KEY/BASE44_MASTER_KEY."
