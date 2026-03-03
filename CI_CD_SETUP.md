@@ -403,28 +403,24 @@ jobs:
         id: deploy-create
         run: |
           echo "📦 Deploying createTrainingAccount..."
-          # In production, use Base44 CLI or API call
-          # base44 deploy functions/createTrainingAccount.ts \
-          #   --project ${{ secrets.BASE44_PROJECT_ID }} \
-          #   --api-key ${{ secrets.BASE44_API_KEY }}
+          base44 deploy functions/createTrainingAccount.ts \
+            --project ${{ secrets.BASE44_PROJECT_ID }}
           echo "✓ createTrainingAccount deployed"
       
       - name: Deploy processTrainingProfitShare function
         id: deploy-share
         run: |
           echo "📦 Deploying processTrainingProfitShare..."
-          # base44 deploy functions/processTrainingProfitShare.ts \
-          #   --project ${{ secrets.BASE44_PROJECT_ID }} \
-          #   --api-key ${{ secrets.BASE44_API_KEY }}
+          base44 deploy functions/processTrainingProfitShare.ts \
+            --project ${{ secrets.BASE44_PROJECT_ID }}
           echo "✓ processTrainingProfitShare deployed"
       
       - name: Update completeTaskWithValidation function
         id: deploy-complete
         run: |
           echo "📦 Updating completeTaskWithValidation..."
-          # base44 deploy functions/completeTaskWithValidation.ts \
-          #   --project ${{ secrets.BASE44_PROJECT_ID }} \
-          #   --api-key ${{ secrets.BASE44_API_KEY }}
+          base44 deploy functions/completeTaskWithValidation.ts \
+            --project ${{ secrets.BASE44_PROJECT_ID }}
           echo "✓ completeTaskWithValidation updated"
 
   verify:

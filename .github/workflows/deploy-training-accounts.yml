@@ -120,6 +120,12 @@ jobs:
       
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+
+      - name: Install Base44 CLI
+        run: npm install -g @base44/cli
+
+      - name: Authenticate Base44 CLI
+        run: base44 login --api-key "${{ secrets.BASE44_API_KEY }}"
       
       - name: Create deployment status
         id: deployment
@@ -132,25 +138,22 @@ jobs:
         id: deploy-create
         run: |
           echo "📦 Deploying createTrainingAccount..."
-          echo "Function file: functions/createTrainingAccount.ts"
-          echo "Project ID: ${{ secrets.BASE44_PROJECT_ID }}"
-          echo "✓ createTrainingAccount file validated"
+          base44 deploy functions/createTrainingAccount.ts --project "${{ secrets.BASE44_PROJECT_ID }}"
+          echo "✓ createTrainingAccount deployed"
       
       - name: Deploy processTrainingProfitShare function
         id: deploy-share
         run: |
           echo "📦 Deploying processTrainingProfitShare..."
-          echo "Function file: functions/processTrainingProfitShare.ts"
-          echo "Project ID: ${{ secrets.BASE44_PROJECT_ID }}"
-          echo "✓ processTrainingProfitShare file validated"
+          base44 deploy functions/processTrainingProfitShare.ts --project "${{ secrets.BASE44_PROJECT_ID }}"
+          echo "✓ processTrainingProfitShare deployed"
       
       - name: Update completeTaskWithValidation function
         id: deploy-complete
         run: |
           echo "📦 Updating completeTaskWithValidation..."
-          echo "Function file: functions/completeTaskWithValidation.ts"
-          echo "Project ID: ${{ secrets.BASE44_PROJECT_ID }}"
-          echo "✓ completeTaskWithValidation file validated"
+          base44 deploy functions/completeTaskWithValidation.ts --project "${{ secrets.BASE44_PROJECT_ID }}"
+          echo "✓ completeTaskWithValidation deployed"
 
   verify:
     name: Verify Deployment
@@ -170,13 +173,18 @@ jobs:
       
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+
+      - name: Install Base44 CLI
+        run: npm install -g @base44/cli
+
+      - name: Authenticate Base44 CLI
+        run: base44 login --api-key "${{ secrets.BASE44_API_KEY }}"
       
       - name: Verify function files
         run: |
-          echo "Verifying deployed files..."
-          echo "✓ createTrainingAccount endpoint configured"
-          echo "✓ processTrainingProfitShare endpoint configured"
-          echo "✓ completeTaskWithValidation endpoint updated"
+          echo "Verifying deployed functions are present..."
+          base44 functions list --project "${{ secrets.BASE44_PROJECT_ID }}"
+          echo "✓ Function listing completed"
       
       - name: Verify database entities
         run: |
