@@ -1,8 +1,17 @@
 # Training Account System - Final Verification Report
 
-**Date**: February 21, 2026  
-**Status**: ✅ **COMPLETE AND TESTED**  
+**Date**: March 3, 2026  
+**Status**: ✅ **COMPLETE, TESTED, AND DECOUPLING VERIFIED**  
 **Exit Code**: All tests passing
+
+---
+
+## Base44 Decoupling Verification (Mar 3, 2026)
+
+- Frontend direct Base44 usage is intentionally centralized to adapter layer: `src/api/backendClient.js`.
+- Backend direct client construction is centralized to shared helper: `functions/_shared/base44Client.ts`.
+- All backend Deno function handlers now use `getBase44Client(req)`; no direct `createClientFromRequest` remains outside helper.
+- Current validation: `npm run test` ✅ 25/25, `npm run test:integration` ✅ 18/18.
 
 ---
 
