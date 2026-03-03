@@ -208,6 +208,42 @@ const functionsApi = {
 	}
 };
 
+const integrationsApi = {
+	Core: {
+		async UploadFile({ file }) {
+			if (resolvedProvider === 'rest') {
+				const formData = new FormData();
+				formData.append('file', file);
+
+				const response = await fetch(buildUrl('/api/integrations/upload-file'), {
+					method: 'POST',
+					body: formData
+				});
+
+				const payload = await response.json().catch(() => ({}));
+				if (!response.ok) {
+					throw new Error(payload?.error || `Request failed: ${response.status}`);
+				}
+
+				return payload;
+			}
+
+			return base44.integrations.Core.UploadFile({ file });
+		},
+
+		async InvokeLLM(payload) {
+			if (resolvedProvider === 'rest') {
+				return restRequest('/api/integrations/invoke-llm', {
+					method: 'POST',
+					body: payload
+				});
+			}
+
+			return base44.integrations.Core.InvokeLLM(payload);
+		}
+	}
+};
+
 const createEntityApi = (entityName) => ({
 	async list(sort, limit) {
 		if (resolvedProvider === 'rest') {
@@ -315,6 +351,7 @@ export const backendProvider = resolvedProvider;
 export const backendClient = {
 	auth: authApi,
 	functions: functionsApi,
+	integrations: integrationsApi,
 	entities: entitiesApi,
 	trainingAccounts: trainingAccountsApi,
 	trainingLogs: trainingLogsApi,

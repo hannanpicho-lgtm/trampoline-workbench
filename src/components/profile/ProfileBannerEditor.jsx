@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Camera, Loader2, X, Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { base44 } from '@/api/base44Client';
 import { backendClient } from '@/api/backendClient';
 
 export default function ProfileBannerEditor({ appUser, onUpdate }) {
@@ -27,7 +26,7 @@ export default function ProfileBannerEditor({ appUser, onUpdate }) {
 
     setUploadingBanner(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await backendClient.integrations.Core.UploadFile({ file });
       setSaving(true);
       
       await backendClient.entities.AppUser.update(appUser.id, {

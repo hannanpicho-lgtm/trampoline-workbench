@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Upload, User, Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function ProfilePictureSection({ picture, onUpdate }) {
@@ -24,7 +24,7 @@ export default function ProfilePictureSection({ picture, onUpdate }) {
 
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await backendClient.integrations.Core.UploadFile({ file });
       onUpdate(file_url);
       toast.success('Profile picture updated');
     } catch (error) {

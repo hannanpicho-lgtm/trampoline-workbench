@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { backendClient } from "@/api/backendClient";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { Loader2, Package, Zap, Sparkles, Eye } from "lucide-react";
 
@@ -113,7 +112,7 @@ For each product, create:
 
 Return ONLY valid JSON array format, no markdown or explanation.`;
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await backendClient.integrations.Core.InvokeLLM({
         prompt,
         response_json_schema: {
           type: "object",

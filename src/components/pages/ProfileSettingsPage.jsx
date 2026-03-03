@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, Camera, Lock, User, Phone, Mail, Loader2, Check, Award, Trophy, Star, Target, Globe, Bell, DollarSign, History, ArrowDown, ArrowUp, Settings as SettingsIcon, ChevronRight, Palette, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 import { getVIPLevel } from "../shared/VIPLevelCard";
 import TaskAutomationSettings from "../automation/TaskAutomationSettings";
@@ -254,7 +253,7 @@ export default function ProfileSettingsPage({ currentUser, onNavigate, onUserUpd
 
     setUploadingPhoto(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await backendClient.integrations.Core.UploadFile({ file });
 
       const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       if (appUserData.length > 0) {

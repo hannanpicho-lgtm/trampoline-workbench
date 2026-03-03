@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send, Loader2, Upload, Bot, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 import { backendClient } from "@/api/backendClient";
-import { base44 } from "@/api/base44Client";
 
 export default function CustomerServiceChat({ currentUser, initialRequest = null, onNavigate = null, onClose = null, isModal = false }) {
   const [isOpen, setIsOpen] = useState(isModal);
@@ -90,7 +89,7 @@ export default function CustomerServiceChat({ currentUser, initialRequest = null
     try {
       const uploadedFiles = [];
       for (const file of files) {
-        const result = await base44.integrations.Core.UploadFile({ file });
+        const result = await backendClient.integrations.Core.UploadFile({ file });
         uploadedFiles.push({
           name: file.name,
           url: result.file_url,

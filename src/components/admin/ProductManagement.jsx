@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
 import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { Plus, Edit2, Trash2, Package, Upload, Crown } from "lucide-react";
@@ -129,7 +128,7 @@ export default function ProductManagement() {
     if (!file) return;
 
     try {
-      const result = await base44.integrations.Core.UploadFile({ file });
+      const result = await backendClient.integrations.Core.UploadFile({ file });
       setFormData(prev => ({ ...prev, imageUrl: result.file_url }));
       toast.success("Image uploaded");
     } catch (error) {
