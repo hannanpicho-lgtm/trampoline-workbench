@@ -234,10 +234,13 @@ jobs:
             fi
           fi
 
-          if [ -z "$API_KEY" ]; then
-            echo "::error::Missing Base44 API credential. Set BASE44_API_KEY or BASE44_MASTER_KEY (secret or variable)."
-            echo "❌ No Base44 API credential found. Set BASE44_API_KEY or BASE44_MASTER_KEY."
+          if [ -z "$API_KEY" ] && [ -z "$SECRET_BASE44_AUTH_JSON" ]; then
+            echo "::error::Missing Base44 authentication. Provide BASE44_AUTH_JSON (preferred) or BASE44_API_KEY/BASE44_MASTER_KEY."
+            echo "❌ No Base44 authentication found. Set BASE44_AUTH_JSON or BASE44_API_KEY/BASE44_MASTER_KEY."
             exit 1
+          fi
+          if [ -z "$API_KEY" ] && [ -n "$SECRET_BASE44_AUTH_JSON" ]; then
+            echo "⚠️ API key not provided; continuing with BASE44_AUTH_JSON authentication"
           fi
           if [ -z "$PROJECT_ID" ]; then
             echo "::error::Missing Base44 project identifier. Set BASE44_PROJECT_ID or BASE44_APP_ID (secret or variable)."
@@ -249,7 +252,9 @@ jobs:
             echo "⚠️ BASE44_SERVICE_ROLE_KEY not configured (optional for this workflow)"
           fi
 
-          echo "::add-mask::$API_KEY"
+          if [ -n "$API_KEY" ]; then
+            echo "::add-mask::$API_KEY"
+          fi
           echo "base44-api-key=$API_KEY" >> $GITHUB_OUTPUT
           echo "base44-project-id=$PROJECT_ID" >> $GITHUB_OUTPUT
           if [ -n "$SECRET_BASE44_AUTH_JSON" ]; then
@@ -328,6 +333,21 @@ jobs:
       - name: Deploy functions
         id: deploy-functions
         run: |
+          if [ ! -f "config.jsonc" ] && [ ! -f "config.json" ] && [ ! -f "base44/config.jsonc" ] && [ ! -f "base44/config.json" ]; then
+            echo "🧩 Creating minimal Base44 config at base44/config.jsonc"
+            mkdir -p base44
+            cat > base44/config.jsonc <<'EOF'
+            {
+              "name": "trampoline-workbench",
+              "description": "Training account backend",
+              "functionsDir": "../functions",
+              "entitiesDir": "../entities",
+              "agentsDir": "../agents",
+              "connectorsDir": "../connectors"
+            }
+            EOF
+          fi
+
           echo "🔗 Linking project..."
           PRIMARY_ID="${{ needs.validate.outputs.base44-project-id }}"
           LINKED=false
@@ -342,10 +362,10 @@ jobs:
           fi
 
           if [ "$LINKED" != "true" ]; then
-            REPO_APP_ID=$(awk -F= '/VITE_BASE44_APP_ID=/{print $2}' README.md | grep -v 'your_app_id' | tail -1 | tr -d '\r')
-            if [ -n "$REPO_APP_ID" ] && [ "$REPO_APP_ID" != "$PRIMARY_ID" ]; then
-              echo "⚠️ Primary project ID failed; retrying link with repo app id fallback"
-              if base44 link --projectId "$REPO_APP_ID"; then
+            FALLBACK_APP_ID=$(node -e "const fs=require('fs');const https=require('https');const auth=JSON.parse(fs.readFileSync(process.env.HOME+'/.base44/auth/auth.json','utf8'));const opts={headers:{Authorization:'Bearer '+auth.accessToken}};https.get('https://app.base44.com/api/apps?sort=-updated_date&fields=id,name&limit=1',opts,res=>{let d='';res.on('data',c=>d+=c);res.on('end',()=>{try{const a=JSON.parse(d);console.log((Array.isArray(a)&&a[0]&&a[0].id)||'')}catch{console.log('')}})}).on('error',()=>console.log(''));")
+            if [ -n "$FALLBACK_APP_ID" ] && [ "$FALLBACK_APP_ID" != "$PRIMARY_ID" ]; then
+              echo "⚠️ Primary project ID failed; retrying link with latest accessible Base44 app id: $FALLBACK_APP_ID"
+              if base44 link --projectId "$FALLBACK_APP_ID"; then
                 LINKED=true
               fi
             fi
