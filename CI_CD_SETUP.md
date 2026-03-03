@@ -491,11 +491,11 @@ jobs:
           fi
       
       - name: Slack notification
-        if: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ steps.status.outputs.status }}
-          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
           text: |
             ${{ steps.status.outputs.emoji }} ${{ steps.status.outputs.message }}
             Repository: ${{ github.repository }}
