@@ -228,6 +228,9 @@ npm test
 # Integration tests
 npm run test:integration
 
+# Decoupling guard
+npm run verify:decoupling
+
 # All together
 npm run test:all
 ```
@@ -243,7 +246,8 @@ Add these scripts to your `package.json`:
     "test:integration": "vitest run tests/integration/",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
-    "test:all": "npm run typecheck && npm run lint && npm test && npm run test:integration",
+    "verify:decoupling": "node scripts/verify-decoupling.js",
+    "test:all": "npm run verify:decoupling && npm run typecheck && npm run lint && npm test && npm run test:integration",
     "typecheck": "tsc -p ./jsconfig.json --noEmit",
     "lint": "eslint src functions --ext .js,.jsx,.ts,.tsx"
   }
@@ -268,7 +272,13 @@ on:
       - 'functions/createTrainingAccount.ts'
       - 'functions/processTrainingProfitShare.ts'
       - 'functions/completeTaskWithValidation.ts'
+      - 'functions/_shared/base44Client.ts'
       - 'src/components/profile/TrainingAccount*.jsx'
+      - 'src/components/admin/AdminTrainingAccounts*.jsx'
+      - 'src/api/backendClient.js'
+      - 'scripts/verify-decoupling.js'
+      - 'scripts/verify-deployment.js'
+      - 'package.json'
       - '.github/workflows/deploy-training-accounts.yml'
 
 env:
@@ -292,18 +302,27 @@ jobs:
       
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+
+      - name: Verify decoupling guard
+        run: npm run verify:decoupling
       
       - name: Type check
         run: npm run typecheck
       
       - name: Lint code
-        run: npm run lint
+        run: |
+          set -o pipefail
+          npm run lint 2>&1 | head -50
       
       - name: Run tests
-        run: npm test
+        run: |
+          set -o pipefail
+          npm test 2>&1 | head -50
       
       - name: Run integration tests
-        run: npm run test:integration
+        run: |
+          set -o pipefail
+          npm run test:integration 2>&1 | head -50
 
   validate:
     name: Validate Configuration
@@ -696,7 +715,7 @@ base44 functions list --project PROJECT_ID
 
 1. **Always Test Locally First**:
    ```bash
-   npm run test:all  # Run before pushing
+  npm run test:all  # Includes decoupling guard + quality checks + tests
    ```
 
 2. **Use Descriptive Commit Messages**:
