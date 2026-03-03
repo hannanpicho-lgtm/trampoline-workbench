@@ -45,15 +45,19 @@ jobs:
         run: npm run typecheck
       
       - name: Lint code
-        run: npm run lint 2>&1 | head -50
+        run: |
+          set -o pipefail
+          npm run lint 2>&1 | head -50
       
       - name: Run unit tests
-        run: npm test 2>&1 | head -50
-        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm test 2>&1 | head -50
       
       - name: Run integration tests
-        run: npm run test:integration 2>&1 | head -50
-        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm run test:integration 2>&1 | head -50
 
   validate:
     name: Validate Configuration
