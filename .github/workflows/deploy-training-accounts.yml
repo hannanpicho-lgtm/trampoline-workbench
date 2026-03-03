@@ -69,12 +69,42 @@ jobs:
               echo "⚠️ BASE44_API_KEY not set; falling back to BASE44_MASTER_KEY"
             fi
           fi
+          if [ -z "$API_KEY" ]; then
+            API_KEY="${{ vars.BASE44_API_KEY }}"
+            if [ -n "$API_KEY" ]; then
+              echo "⚠️ Using repository variable BASE44_API_KEY"
+            fi
+          fi
+          if [ -z "$API_KEY" ]; then
+            API_KEY="${{ vars.BASE44_MASTER_KEY }}"
+            if [ -n "$API_KEY" ]; then
+              echo "⚠️ Using repository variable BASE44_MASTER_KEY"
+            fi
+          fi
 
           PROJECT_ID="${{ secrets.BASE44_PROJECT_ID }}"
           if [ -z "$PROJECT_ID" ]; then
             PROJECT_ID="${{ secrets.BASE44_APP_ID }}"
             if [ -n "$PROJECT_ID" ]; then
               echo "⚠️ BASE44_PROJECT_ID not set; falling back to BASE44_APP_ID"
+            fi
+          fi
+          if [ -z "$PROJECT_ID" ]; then
+            PROJECT_ID="${{ vars.BASE44_PROJECT_ID }}"
+            if [ -n "$PROJECT_ID" ]; then
+              echo "⚠️ Using repository variable BASE44_PROJECT_ID"
+            fi
+          fi
+          if [ -z "$PROJECT_ID" ]; then
+            PROJECT_ID="${{ vars.BASE44_APP_ID }}"
+            if [ -n "$PROJECT_ID" ]; then
+              echo "⚠️ Using repository variable BASE44_APP_ID"
+            fi
+          fi
+          if [ -z "$PROJECT_ID" ]; then
+            PROJECT_ID="${{ vars.VITE_BASE44_APP_ID }}"
+            if [ -n "$PROJECT_ID" ]; then
+              echo "⚠️ Using repository variable VITE_BASE44_APP_ID"
             fi
           fi
 
