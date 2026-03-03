@@ -1,69 +1,25 @@
-# Changelog# Changelog
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-- `12eed5f` Normalize deployment guide version date format- `2deb491` Standardize markdown metadata date format- `8395d75` Update verification report generated date to March- `46cd8ac` Align deployment docs dates with March verification- `9121bc6` Refresh verification report with March migration status- `902228c` Update deployment status with migration verification- `b8fa4fd` Add .gitattributes to enforce LF line endings- `fe558d6` Adopt shared Base44 client in remaining backend functions- `2ae88bc` Adopt shared Base44 client in proactive and product backend functions- `ffd764e` Adopt shared Base44 client in analytics and admin backend functions- `7a2c77b` Adopt shared Base44 client in AI and rewards backend functions- `c2bad47` Adopt shared Base44 client in task assignment backend functions### Notable Commits- Integration tests passing: `npm run test:integration` (18/18).- Unit tests passing: `npm run test` (25/25).### Validation- Normalized markdown metadata date formatting across project docs (human-readable format).- Refreshed deployment and verification documentation to reflect migration completion and current validation status.- Confirmed frontend Base44 access remains centralized through adapter layer in `src/api/backendClient.js`.- Completed backend Base44 client decoupling by migrating all Deno functions to shared helper `getBase44Client(req)` from `functions/_shared/base44Client.ts`.### Changed- Added repository `CHANGELOG.md` for release tracking.- Added `.gitattributes` to enforce LF line endings for source and documentation files.### Added## March 3, 2026
-## 2026-03-03
-
-### Base44 Decoupling Completion
-- Completed backend migration to shared client helper `getBase44Client(req)` across all Deno functions.
-- Confirmed frontend Base44 usage is centralized behind `src/api/backendClient.js`.
-- Confirmed backend `createClientFromRequest` usage is centralized in `functions/_shared/base44Client.ts` only.
-
-### Adapter and Backend Cleanup
-- Added and validated backend adapter surfaces used by migrated call sites (`functions.invoke`, `integrations.Core.UploadFile`, `integrations.Core.InvokeLLM`).
-- Removed remaining direct frontend `base44` call sites outside the adapter in components/pages/lib during migration phases.
-
-### Documentation and Consistency Updates
-- Updated deployment and verification docs with current migration completion status and March 3, 2026 verification dates.
-- Standardized markdown metadata date formatting to human-readable style across docs.
-- Added `.gitattributes` to enforce LF line endings for source/docs files.
-
 # Changelog
 
 ## March 3, 2026
 
 ### Added
 - Added `.gitattributes` to enforce LF line endings for source and documentation files.
-- Added repository `CHANGELOG.md` for release tracking.
+- Added repository changelog tracking in `CHANGELOG.md`.
+- Added automated regression guard `scripts/verify-decoupling.js`.
+- Added npm script `verify:decoupling` and integrated it into `test:all`.
 
 ### Changed
-- Completed backend Base44 client decoupling by migrating all Deno functions to shared helper `getBase44Client(req)` from `functions/_shared/base44Client.ts`.
-- Confirmed frontend Base44 access remains centralized through adapter layer in `src/api/backendClient.js`.
-- Refreshed deployment and verification documentation to reflect migration completion and current validation status.
-- Normalized markdown metadata date formatting across project docs (human-readable format).
+- Completed backend Base44 decoupling: all Deno functions now use shared helper `getBase44Client(req)` from `functions/_shared/base44Client.ts`.
+- Confirmed frontend Base44 access remains centralized through `src/api/backendClient.js`.
+- Updated `scripts/verify-deployment.js` to execute decoupling verification during pre-deployment validation.
+- Enforced decoupling verification in CI workflows (`.github/workflows/test.yml`, `.github/workflows/deploy-training-accounts.yml`).
+- Tightened CI/deploy behavior to fail-fast for core quality, test, and deployment steps.
+- Standardized markdown metadata dates and refreshed deployment/verification documentation to March 3, 2026.
 
 ### Validation
-- Unit tests passing: `npm run test` (25/25).
-- Integration tests passing: `npm run test:integration` (18/18).
+- Decoupling verification passes: `npm run verify:decoupling`.
+- Unit tests pass: `npm run test` (25/25).
+- Integration tests pass: `npm run test:integration` (18/18).
 
 ### Notable Commits
 - `c2bad47` Adopt shared Base44 client in task assignment backend functions
@@ -71,10 +27,9 @@
 - `ffd764e` Adopt shared Base44 client in analytics and admin backend functions
 - `2ae88bc` Adopt shared Base44 client in proactive and product backend functions
 - `fe558d6` Adopt shared Base44 client in remaining backend functions
-- `b8fa4fd` Add .gitattributes to enforce LF line endings
-- `902228c` Update deployment status with migration verification
-- `9121bc6` Refresh verification report with March migration status
-- `46cd8ac` Align deployment docs dates with March verification
-- `8395d75` Update verification report generated date to March
-- `2deb491` Standardize markdown metadata date format
-- `12eed5f` Normalize deployment guide version date format
+- `38bf778` Add automated Base44 decoupling verification guard
+- `995d12b` Enforce decoupling guard in deployment verification
+- `96ad54a` Enforce decoupling verification in CI workflows
+- `5d004e2` Make CI quality gates strictly blocking
+- `c7c6fcf` Make deployment function steps fail-fast in CI
+- `a04ae46` Update CI/CD guide for decoupling guard and strict gates

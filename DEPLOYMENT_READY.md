@@ -380,6 +380,14 @@ Follow `DEPLOYMENT_GUIDE.md` for comprehensive instructions with:
 - All backend function files now consume shared helper `getBase44Client(req)`.
 - Validation remains green: `npm run test` (25/25) and `npm run test:integration` (18/18).
 
+### CI/CD Hardening Verification (Mar 3, 2026)
+
+- Added automated guard `scripts/verify-decoupling.js` to block direct Base44 usage regressions.
+- Added npm script `verify:decoupling` and included it in `test:all`.
+- Integrated decoupling verification into `scripts/verify-deployment.js` pre-deploy checks.
+- Enforced decoupling verification in GitHub Actions test and deployment workflows.
+- Converted CI/deployment quality gates to fail-fast behavior for strict enforcement.
+
 ---
 
 ## Quick Links
