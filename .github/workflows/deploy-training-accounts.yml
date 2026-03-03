@@ -109,10 +109,12 @@ jobs:
           fi
 
           if [ -z "$API_KEY" ]; then
+            echo "::error::Missing Base44 API credential. Set BASE44_API_KEY or BASE44_MASTER_KEY (secret or variable)."
             echo "❌ No Base44 API credential found. Set BASE44_API_KEY or BASE44_MASTER_KEY."
             exit 1
           fi
           if [ -z "$PROJECT_ID" ]; then
+            echo "::error::Missing Base44 project identifier. Set BASE44_PROJECT_ID or BASE44_APP_ID (secret or variable)."
             echo "❌ No Base44 project identifier found. Set BASE44_PROJECT_ID or BASE44_APP_ID."
             exit 1
           fi
