@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 import { toast } from "sonner";
 import { Settings, Save, Loader2 } from "lucide-react";
 
@@ -14,13 +14,13 @@ export default function TaskAutomationSettings({ userId }) {
 
   const loadPreferences = async () => {
     try {
-      const prefs = await base44.entities.TaskAutomationPreference.filter({ userId });
+      const prefs = await backendClient.entities.TaskAutomationPreference.filter({ userId });
       
       if (prefs.length > 0) {
         setPreferences(prefs[0]);
       } else {
         // Create default preferences
-        const newPrefs = await base44.entities.TaskAutomationPreference.create({
+        const newPrefs = await backendClient.entities.TaskAutomationPreference.create({
           userId,
           autoCompleteEnabled: false,
           autoCompleteRules: {
@@ -42,7 +42,7 @@ export default function TaskAutomationSettings({ userId }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await base44.entities.TaskAutomationPreference.update(preferences.id, preferences);
+      await backendClient.entities.TaskAutomationPreference.update(preferences.id, preferences);
       toast.success("Automation settings saved");
     } catch (error) {
       toast.error("Failed to save settings");

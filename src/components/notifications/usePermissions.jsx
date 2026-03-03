@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 
 export const usePermissions = (userId) => {
   const [permissions, setPermissions] = useState([]);
@@ -11,12 +11,12 @@ export const usePermissions = (userId) => {
     setLoading(true);
     try {
       // Get user roles
-      const userRoles = await base44.entities.UserRole.filter({ userId });
+      const userRoles = await backendClient.entities.UserRole.filter({ userId });
       const roleIds = userRoles.map(ur => ur.roleId);
       setRoles(userRoles);
 
       // Get all role details
-      const allRoles = await base44.entities.Role.list();
+      const allRoles = await backendClient.entities.Role.list();
       const userRoleDetails = allRoles.filter(r => roleIds.includes(r.id));
 
       // Collect all permissions

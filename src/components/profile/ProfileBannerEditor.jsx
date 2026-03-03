@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Camera, Loader2, X, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 
 export default function ProfileBannerEditor({ appUser, onUpdate }) {
   const [uploadingBanner, setUploadingBanner] = useState(false);
@@ -29,7 +30,7 @@ export default function ProfileBannerEditor({ appUser, onUpdate }) {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setSaving(true);
       
-      await base44.entities.AppUser.update(appUser.id, {
+      await backendClient.entities.AppUser.update(appUser.id, {
         bannerImage: file_url
       });
 
@@ -46,7 +47,7 @@ export default function ProfileBannerEditor({ appUser, onUpdate }) {
   const updateBannerStyle = async (field, value) => {
     setSaving(true);
     try {
-      await base44.entities.AppUser.update(appUser.id, { [field]: value });
+      await backendClient.entities.AppUser.update(appUser.id, { [field]: value });
       onUpdate({ ...appUser, [field]: value });
       toast.success('Banner updated');
     } catch (error) {
@@ -139,7 +140,7 @@ export default function ProfileBannerEditor({ appUser, onUpdate }) {
           onClick={async () => {
             setSaving(true);
             try {
-              await base44.entities.AppUser.update(appUser.id, { bannerImage: null });
+              await backendClient.entities.AppUser.update(appUser.id, { bannerImage: null });
               onUpdate({ ...appUser, bannerImage: null });
               toast.success('Banner removed');
             } catch (error) {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X, Eye, EyeOff, Wallet } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function AddWalletModal({ show, onClose, currentUser }) {
   const [step, setStep] = useState("verify"); // verify or add-wallet
@@ -20,7 +20,7 @@ export default function AddWalletModal({ show, onClose, currentUser }) {
 
     setLoading(true);
     try {
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       
       if (appUserData.length === 0) {
         toast.error("User data not found");
@@ -61,7 +61,7 @@ export default function AddWalletModal({ show, onClose, currentUser }) {
 
     setLoading(true);
     try {
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       
       if (appUserData.length === 0) {
         toast.error("User data not found");

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X, Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
+import { backendClient } from "@/api/backendClient";
 
 export default function WithdrawModal({ show, onClose, currentUser, onSuccess }) {
   const [amount, setAmount] = useState("");
@@ -25,7 +25,7 @@ export default function WithdrawModal({ show, onClose, currentUser, onSuccess })
     setIsLoading(true);
     try {
       // Get current user data
-      const appUserData = await base44.entities.AppUser.filter({ created_by: currentUser.email });
+      const appUserData = await backendClient.entities.AppUser.filter({ created_by: currentUser.email });
       
       if (appUserData.length === 0) {
         toast.error("User data not found");
@@ -106,7 +106,7 @@ export default function WithdrawModal({ show, onClose, currentUser, onSuccess })
       };
 
       // Create commission payout request (admin review required)
-      await base44.entities.CommissionPayout.create({
+      await backendClient.entities.CommissionPayout.create({
         userId: appUser.id,
         userEmail: currentUser.email,
         amount: withdrawAmount,
@@ -120,7 +120,7 @@ export default function WithdrawModal({ show, onClose, currentUser, onSuccess })
       });
 
       // Update user balance
-      await base44.entities.AppUser.update(appUser.id, {
+      await backendClient.entities.AppUser.update(appUser.id, {
         balance: newBalance
       });
 
