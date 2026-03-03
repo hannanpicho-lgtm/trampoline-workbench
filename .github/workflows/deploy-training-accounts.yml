@@ -67,10 +67,9 @@ jobs:
             exit 1
           fi
           if [ -z "${{ secrets.BASE44_SERVICE_ROLE_KEY }}" ]; then
-            echo "❌ BASE44_SERVICE_ROLE_KEY not configured"
-            exit 1
+            echo "⚠️ BASE44_SERVICE_ROLE_KEY not configured (optional for this workflow)"
           fi
-          echo "✓ All Base44 credentials configured"
+          echo "✓ Required Base44 credentials configured"
       
       - name: Validate function files exist
         run: |

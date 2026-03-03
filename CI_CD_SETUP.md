@@ -90,7 +90,7 @@ Add the following secrets (values from Base44 Dashboard):
 |-------------|-------|---|
 | `BASE44_API_KEY` | Your Base44 API key | Base44 Dashboard → Settings → API Keys |
 | `BASE44_PROJECT_ID` | Your Base44 project ID | Base44 Dashboard → Project Settings |
-| `BASE44_SERVICE_ROLE_KEY` | Service role key for backend | Base44 Dashboard → Settings → Secrets |
+| `BASE44_SERVICE_ROLE_KEY` | Service role key for backend (optional for deploy workflow gate) | Base44 Dashboard → Settings → Secrets |
 | `BASE44_MASTER_KEY` | Master key for database operations | Base44 Dashboard → Settings → Advanced |
 
 ### Step 3: Add Optional Notification Secrets
@@ -351,10 +351,9 @@ jobs:
             exit 1
           fi
           if [ -z "${{ secrets.BASE44_SERVICE_ROLE_KEY }}" ]; then
-            echo "❌ BASE44_SERVICE_ROLE_KEY not configured"
-            exit 1
+            echo "⚠️ BASE44_SERVICE_ROLE_KEY not configured (optional for this workflow)"
           fi
-          echo "✓ All Base44 credentials configured"
+          echo "✓ Required Base44 credentials configured"
       
       - name: Validate function files exist
         run: |
