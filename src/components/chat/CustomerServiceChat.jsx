@@ -124,7 +124,7 @@ export default function CustomerServiceChat({ currentUser, initialRequest = null
       // Try AI first if enabled and no files
       if (aiMode && !files.length && messageText) {
         try {
-          const aiResponse = await base44.functions.invoke('aiSupportAssistant', {
+          const aiResponse = await backendClient.functions.invoke('aiSupportAssistant', {
             message: messageText,
             userId: appUserData[0].id,
             conversationHistory: messages.slice(-10)

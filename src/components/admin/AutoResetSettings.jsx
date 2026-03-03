@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { backendClient } from "@/api/backendClient";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Power, RefreshCw, AlertCircle } from "lucide-react";
 
@@ -102,7 +101,7 @@ export default function AutoResetSettings() {
     if (!confirm("Manually trigger this rule now? This will check all users against this rule.")) return;
     
     try {
-      const result = await base44.functions.invoke("autoResetProcessor", {
+      const result = await backendClient.functions.invoke("autoResetProcessor", {
         ruleId,
         manualTrigger: true
       });

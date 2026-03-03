@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, AlertCircle, Check, MessageCircle, X, Sparkles, Crown, History, Star, TrendingUp, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { backendClient } from "@/api/backendClient";
-import { base44 } from "@/api/base44Client";
 import { getTasksPerSet } from "../shared/VIPTaskConfig";
 import { canSubmitTask, getMinimumBalance } from "../tasks/vipRequirements";
 import TaskSubmissionValidator from "../tasks/TaskSubmissionValidator";
@@ -407,7 +406,7 @@ export default function StartingPage({ currentUser, onNavigate }) {
           try {
             const userTask = userTasks.find(t => t.productId === product.id && t.status === "completed");
             if (userTask) {
-              await base44.functions.invoke('processReferralCommission', {
+              await backendClient.functions.invoke('processReferralCommission', {
                 taskId: userTask.id,
                 userId: appUser.id,
                 commissionAmount: taskCommission

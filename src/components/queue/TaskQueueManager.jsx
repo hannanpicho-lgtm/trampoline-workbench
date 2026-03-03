@@ -1,5 +1,4 @@
 import { backendClient } from "@/api/backendClient";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
 /**
@@ -161,7 +160,7 @@ export function subscribeToQueue(userId, callback) {
  */
 export async function triggerQueueProcessing() {
   try {
-    const response = await base44.functions.invoke('processTaskQueue', {});
+    const response = await backendClient.functions.invoke('processTaskQueue', {});
     return response.data;
   } catch (error) {
     console.error("Failed to process queue:", error);

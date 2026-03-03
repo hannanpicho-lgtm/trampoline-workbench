@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backendClient } from '@/api/backendClient';
 import { toast } from 'sonner';
 
 export default function PasswordChangeSection() {
@@ -27,7 +27,7 @@ export default function PasswordChangeSection() {
 
     setIsLoading(true);
     try {
-      await base44.functions.invoke('changePassword', {
+      await backendClient.functions.invoke('changePassword', {
         currentPassword,
         newPassword
       });
