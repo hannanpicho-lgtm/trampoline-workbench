@@ -329,8 +329,60 @@ jobs:
           BASE44_AUTH_JSON: ${{ secrets.BASE44_AUTH_JSON }}
         run: |
           mkdir -p "$HOME/.base44/auth"
-          printf '%s' "$BASE44_AUTH_JSON" > "$HOME/.base44/auth/auth.json"
-          echo "✓ Base44 auth state restored from secret"
+          node - <<'NODE'
+          const fs = require('fs');
+          const os = require('os');
+          const path = require('path');
+
+          const raw = process.env.BASE44_AUTH_JSON || '';
+          const target = path.join(os.homedir(), '.base44', 'auth', 'auth.json');
+
+          function tryParse(value) {
+            try {
+              return JSON.parse(value);
+            } catch {
+              return null;
+            }
+          }
+
+          function normalizePayload(input) {
+            let parsed = tryParse(input.trim());
+            if (typeof parsed === 'string') {
+              const reparsed = tryParse(parsed);
+              if (reparsed) parsed = reparsed;
+            }
+
+            if (!parsed || typeof parsed !== 'object') {
+              return null;
+            }
+
+            const source = parsed.auth && typeof parsed.auth === 'object' ? parsed.auth : parsed;
+
+            const normalized = {
+              accessToken: source.accessToken || source.access_token || source.token || '',
+              refreshToken: source.refreshToken || source.refresh_token || '',
+              expiresAt: source.expiresAt || source.expires_at || '',
+              email: source.email || '',
+              name: source.name || ''
+            };
+
+            if (!normalized.accessToken || typeof normalized.accessToken !== 'string') {
+              return null;
+            }
+
+            return normalized;
+          }
+
+          const normalized = normalizePayload(raw);
+          if (!normalized) {
+            console.error('Invalid BASE44_AUTH_JSON. Expected JSON with at least a valid accessToken string.');
+            process.exit(1);
+          }
+
+          fs.mkdirSync(path.dirname(target), { recursive: true });
+          fs.writeFileSync(target, JSON.stringify(normalized, null, 2), 'utf8');
+          NODE
+          echo "✓ Base44 auth state restored and normalized"
 
       - name: Verify Base44 authentication
         if: ${{ needs.validate.outputs.has-base44-auth-json == 'true' }}
