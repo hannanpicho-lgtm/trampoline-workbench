@@ -357,16 +357,15 @@ jobs:
 
           if [ ! -f "config.jsonc" ] && [ ! -f "config.json" ] && [ ! -f "base44/config.jsonc" ] && [ ! -f "base44/config.json" ]; then
             echo "🧩 Creating minimal Base44 config at config.jsonc"
-            cat > config.jsonc <<'EOF'
-            {
-              "name": "trampoline-workbench",
-              "description": "Training account backend",
-              "functionsDir": "functions",
-              "entitiesDir": "entities",
-              "agentsDir": "agents",
-              "connectorsDir": "connectors"
-            }
-            EOF
+            printf '%s\n' \
+              '{' \
+              '  "name": "trampoline-workbench",' \
+              '  "description": "Training account backend",' \
+              '  "functionsDir": "functions",' \
+              '  "entitiesDir": "entities",' \
+              '  "agentsDir": "agents",' \
+              '  "connectorsDir": "connectors"' \
+              '}' > config.jsonc
           fi
 
           echo "🔗 Linking project..."
