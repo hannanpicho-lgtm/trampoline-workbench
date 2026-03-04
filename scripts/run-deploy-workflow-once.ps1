@@ -18,7 +18,11 @@ try {
   [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
 }
 
-$normalizedToken = [regex]::Replace(($plainToken ?? ""), "[\u0000-\u001F\u007F\s]", "")
+if ($null -eq $plainToken) {
+  $plainToken = ""
+}
+
+$normalizedToken = [regex]::Replace($plainToken, "[\u0000-\u001F\u007F\s]", "")
 
 if ([string]::IsNullOrWhiteSpace($normalizedToken)) {
   Write-Error "Token was empty."
