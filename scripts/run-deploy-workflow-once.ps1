@@ -18,12 +18,14 @@ try {
   [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
 }
 
-if ([string]::IsNullOrWhiteSpace($plainToken)) {
+$normalizedToken = [regex]::Replace(($plainToken ?? ""), "[\u0000-\u001F\u007F\s]", "")
+
+if ([string]::IsNullOrWhiteSpace($normalizedToken)) {
   Write-Error "Token was empty."
   exit 1
 }
 
-$env:GITHUB_TOKEN = $plainToken
+$env:GITHUB_TOKEN = $normalizedToken
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 & $runner -EnableDeploy $EnableDeploy
