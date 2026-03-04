@@ -380,7 +380,10 @@ jobs:
           }
 
           fs.mkdirSync(path.dirname(target), { recursive: true });
-          fs.writeFileSync(target, JSON.stringify(normalized, null, 2), 'utf8');
+          const cleaned = Object.fromEntries(
+            Object.entries(normalized).filter(([_, v]) => v && typeof v === 'string' && v.length > 0)
+          );
+          fs.writeFileSync(target, JSON.stringify(cleaned, null, 2), 'utf8');
           NODE
           echo "✓ Base44 auth state restored and normalized"
 
