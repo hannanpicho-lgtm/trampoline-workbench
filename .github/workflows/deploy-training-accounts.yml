@@ -356,16 +356,15 @@ jobs:
           set +e
 
           if [ ! -f "config.jsonc" ] && [ ! -f "config.json" ] && [ ! -f "base44/config.jsonc" ] && [ ! -f "base44/config.json" ]; then
-            echo "🧩 Creating minimal Base44 config at base44/config.jsonc"
-            mkdir -p base44
-            cat > base44/config.jsonc <<'EOF'
+            echo "🧩 Creating minimal Base44 config at config.jsonc"
+            cat > config.jsonc <<'EOF'
             {
               "name": "trampoline-workbench",
               "description": "Training account backend",
-              "functionsDir": "../functions",
-              "entitiesDir": "../entities",
-              "agentsDir": "../agents",
-              "connectorsDir": "../connectors"
+              "functionsDir": "functions",
+              "entitiesDir": "entities",
+              "agentsDir": "agents",
+              "connectorsDir": "connectors"
             }
             EOF
           fi
@@ -375,6 +374,8 @@ jobs:
           LINKED=false
 
           if base44 link --projectId "$PRIMARY_ID"; then
+            LINKED=true
+          elif base44 link --project-id "$PRIMARY_ID"; then
             LINKED=true
           else
             echo "⚠️ base44 link --projectId failed, retrying with short flag"
@@ -395,6 +396,8 @@ jobs:
             if [ -n "$FALLBACK_APP_ID" ] && [ "$FALLBACK_APP_ID" != "$PRIMARY_ID" ]; then
               echo "⚠️ Primary project ID failed; retrying link with latest accessible Base44 app id: $FALLBACK_APP_ID"
               if base44 link --projectId "$FALLBACK_APP_ID"; then
+                LINKED=true
+              elif base44 link --project-id "$FALLBACK_APP_ID"; then
                 LINKED=true
               elif base44 link --appId "$FALLBACK_APP_ID"; then
                 LINKED=true
@@ -419,6 +422,8 @@ jobs:
             echo "🔁 Retrying with project id flag"
             if base44 functions deploy --projectId "$PRIMARY_ID"; then
               DEPLOY_OK=true
+            elif base44 functions deploy --project-id "$PRIMARY_ID"; then
+              DEPLOY_OK=true
             fi
           fi
 
@@ -439,6 +444,8 @@ jobs:
           if [ "$DEPLOY_OK" != "true" ]; then
             echo "🔁 Retrying full deploy with project id flag"
             if base44 deploy -y --projectId "$PRIMARY_ID"; then
+              DEPLOY_OK=true
+            elif base44 deploy -y --project-id "$PRIMARY_ID"; then
               DEPLOY_OK=true
             fi
           fi
