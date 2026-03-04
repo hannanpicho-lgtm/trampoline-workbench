@@ -334,7 +334,7 @@ jobs:
 
       - name: Verify Base44 authentication
         if: ${{ needs.validate.outputs.has-base44-auth-json == 'true' }}
-        run: base44 whoami
+        run: npx --yes base44 whoami
 
       - name: Fail when auth json missing
         if: ${{ needs.validate.outputs.has-base44-auth-json != 'true' }}
@@ -355,6 +355,10 @@ jobs:
         run: |
           set +e
 
+          run_b44() {
+            npx --yes base44 "$@"
+          }
+
           if [ ! -f "config.jsonc" ] && [ ! -f "config.json" ] && [ ! -f "base44/config.jsonc" ] && [ ! -f "base44/config.json" ]; then
             echo "🧩 Creating minimal Base44 config at config.jsonc"
             printf '%s\n' \
@@ -372,19 +376,19 @@ jobs:
           PRIMARY_ID="${{ needs.validate.outputs.base44-project-id }}"
           LINKED=false
 
-          if base44 link --projectId "$PRIMARY_ID"; then
+          if run_b44 link --projectId "$PRIMARY_ID"; then
             LINKED=true
-          elif base44 link --project-id "$PRIMARY_ID"; then
+          elif run_b44 link --project-id "$PRIMARY_ID"; then
             LINKED=true
           else
             echo "⚠️ base44 link --projectId failed, retrying with short flag"
-            if base44 link -p "$PRIMARY_ID"; then
+            if run_b44 link -p "$PRIMARY_ID"; then
               LINKED=true
             else
               echo "⚠️ base44 link -p failed, retrying with appId variants"
-              if base44 link --appId "$PRIMARY_ID"; then
+              if run_b44 link --appId "$PRIMARY_ID"; then
                 LINKED=true
-              elif base44 link -a "$PRIMARY_ID"; then
+              elif run_b44 link -a "$PRIMARY_ID"; then
                 LINKED=true
               fi
             fi
@@ -394,11 +398,11 @@ jobs:
             FALLBACK_APP_ID=$(node -e "const fs=require('fs');const https=require('https');const auth=JSON.parse(fs.readFileSync(process.env.HOME+'/.base44/auth/auth.json','utf8'));const opts={headers:{Authorization:'Bearer '+auth.accessToken}};https.get('https://app.base44.com/api/apps?sort=-updated_date&fields=id,name&limit=1',opts,res=>{let d='';res.on('data',c=>d+=c);res.on('end',()=>{try{const a=JSON.parse(d);console.log((Array.isArray(a)&&a[0]&&a[0].id)||'')}catch{console.log('')}})}).on('error',()=>console.log(''));" 2>/dev/null || true)
             if [ -n "$FALLBACK_APP_ID" ] && [ "$FALLBACK_APP_ID" != "$PRIMARY_ID" ]; then
               echo "⚠️ Primary project ID failed; retrying link with latest accessible Base44 app id: $FALLBACK_APP_ID"
-              if base44 link --projectId "$FALLBACK_APP_ID"; then
+              if run_b44 link --projectId "$FALLBACK_APP_ID"; then
                 LINKED=true
-              elif base44 link --project-id "$FALLBACK_APP_ID"; then
+              elif run_b44 link --project-id "$FALLBACK_APP_ID"; then
                 LINKED=true
-              elif base44 link --appId "$FALLBACK_APP_ID"; then
+              elif run_b44 link --appId "$FALLBACK_APP_ID"; then
                 LINKED=true
               fi
             fi
@@ -411,7 +415,7 @@ jobs:
           echo "📦 Deploying functions..."
           DEPLOY_OK=false
 
-          if base44 functions deploy; then
+          if run_b44 functions deploy; then
             DEPLOY_OK=true
           else
             echo "⚠️ base44 functions deploy failed"
@@ -419,46 +423,46 @@ jobs:
 
           if [ "$DEPLOY_OK" != "true" ]; then
             echo "🔁 Retrying with project id flag"
-            if base44 functions deploy --projectId "$PRIMARY_ID"; then
+            if run_b44 functions deploy --projectId "$PRIMARY_ID"; then
               DEPLOY_OK=true
-            elif base44 functions deploy --project-id "$PRIMARY_ID"; then
+            elif run_b44 functions deploy --project-id "$PRIMARY_ID"; then
               DEPLOY_OK=true
             fi
           fi
 
           if [ "$DEPLOY_OK" != "true" ]; then
             echo "🔁 Retrying with app id flag"
-            if base44 functions deploy --appId "$PRIMARY_ID"; then
+            if run_b44 functions deploy --appId "$PRIMARY_ID"; then
               DEPLOY_OK=true
             fi
           fi
 
           if [ "$DEPLOY_OK" != "true" ]; then
             echo "🔁 Retrying with full deploy"
-            if base44 deploy -y; then
+            if run_b44 deploy -y; then
               DEPLOY_OK=true
             fi
           fi
 
           if [ "$DEPLOY_OK" != "true" ]; then
             echo "🔁 Retrying full deploy with project id flag"
-            if base44 deploy -y --projectId "$PRIMARY_ID"; then
+            if run_b44 deploy -y --projectId "$PRIMARY_ID"; then
               DEPLOY_OK=true
-            elif base44 deploy -y --project-id "$PRIMARY_ID"; then
+            elif run_b44 deploy -y --project-id "$PRIMARY_ID"; then
               DEPLOY_OK=true
             fi
           fi
 
           if [ "$DEPLOY_OK" != "true" ]; then
             echo "🔁 Retrying full deploy with app id flag"
-            if base44 deploy -y --appId "$PRIMARY_ID"; then
+            if run_b44 deploy -y --appId "$PRIMARY_ID"; then
               DEPLOY_OK=true
             fi
           fi
 
           if [ "$DEPLOY_OK" != "true" ]; then
             echo "🔁 Retrying with alternate yes flag"
-            if base44 deploy --yes; then
+            if run_b44 deploy --yes; then
               DEPLOY_OK=true
             fi
           fi
@@ -507,8 +511,8 @@ jobs:
       - name: Verify function files
         run: |
           echo "Verifying Base44 access and project link..."
-          base44 link --projectId "${{ needs.validate.outputs.base44-project-id }}"
-          base44 whoami
+          npx --yes base44 link --projectId "${{ needs.validate.outputs.base44-project-id }}"
+          npx --yes base44 whoami
           echo "✓ Base44 verification completed"
       
       - name: Verify database entities
