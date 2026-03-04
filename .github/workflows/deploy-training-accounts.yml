@@ -337,55 +337,33 @@ jobs:
           const raw = process.env.BASE44_AUTH_JSON || '';
           const target = path.join(os.homedir(), '.base44', 'auth', 'auth.json');
 
-          function tryParse(value) {
-            try {
-              return JSON.parse(value);
-            } catch {
-              return null;
-            }
-          }
-
-          function normalizePayload(input) {
-            let parsed = tryParse(input.trim());
+          try {
+            let parsed = JSON.parse(raw.trim());
             if (typeof parsed === 'string') {
-              const reparsed = tryParse(parsed);
-              if (reparsed) parsed = reparsed;
+              parsed = JSON.parse(parsed);
             }
 
-            if (!parsed || typeof parsed !== 'object') {
-              return null;
+            const accessToken = (
+              parsed?.accessToken || 
+              parsed?.access_token || 
+              parsed?.token ||
+              parsed?.auth?.accessToken ||
+              parsed?.auth?.access_token ||
+              parsed?.auth?.token
+            );
+
+            if (!accessToken || typeof accessToken !== 'string') {
+              throw new Error('No valid accessToken found');
             }
 
-            const source = parsed.auth && typeof parsed.auth === 'object' ? parsed.auth : parsed;
-
-            const normalized = {
-              accessToken: source.accessToken || source.access_token || source.token || '',
-              refreshToken: source.refreshToken || source.refresh_token || '',
-              expiresAt: source.expiresAt || source.expires_at || '',
-              email: source.email || '',
-              name: source.name || ''
-            };
-
-            if (!normalized.accessToken || typeof normalized.accessToken !== 'string') {
-              return null;
-            }
-
-            return normalized;
-          }
-
-          const normalized = normalizePayload(raw);
-          if (!normalized) {
-            console.error('Invalid BASE44_AUTH_JSON. Expected JSON with at least a valid accessToken string.');
+            fs.mkdirSync(path.dirname(target), { recursive: true });
+            fs.writeFileSync(target, JSON.stringify({ accessToken }, null, 2), 'utf8');
+          } catch (err) {
+            console.error('Failed to configure auth:', err.message);
             process.exit(1);
           }
-
-          fs.mkdirSync(path.dirname(target), { recursive: true });
-          const cleaned = Object.fromEntries(
-            Object.entries(normalized).filter(([_, v]) => v && typeof v === 'string' && v.length > 0)
-          );
-          fs.writeFileSync(target, JSON.stringify(cleaned, null, 2), 'utf8');
           NODE
-          echo "✓ Base44 auth state restored and normalized"
+          echo "✓ Base44 auth configured"
 
       - name: Verify Base44 authentication
         if: ${{ needs.validate.outputs.has-base44-auth-json == 'true' }}
